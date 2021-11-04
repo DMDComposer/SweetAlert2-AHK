@@ -68,9 +68,9 @@ Swal.fire("string",{options}[,wait := "1",defaultActions := "1", customClass := 
 Swal.toast("string",{options}[,wait := "0",sleep := "0"])
 ```
 
-## Default & Dark Mode, THEMES! 🌚
+## Default & Dark Mode, THEMES! 🌕🌚
 
-![Light & Dark Mode Comparison](SweetAlert2/images/ex_Light %26 Dark Theme.PNG)
+![Light & Dark Mode Comparison](SweetAlert2/images/ex_Light_Dark_Theme.PNG)
 
 - Set in the options object, {theme:dark} you can enable a bunch of themes
 - by default, light/dark mode will trigger based on the time of day. I set it to turn to dark from 7pm - 7am
@@ -394,6 +394,8 @@ Swal.fire(JS)
 - Ctrl X will close the window
 - Ctrl C will click clipboard
 - Enter will hit submit
+
+![](SweetAlert2/images/ex_Percentage_Diff_Calculator.PNG)
 
 ```ahk
 ; Created a Percentage Diff Calculator
