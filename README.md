@@ -183,10 +183,9 @@ JS =
 Swal.fire(JS)
 ```
 
+```ahk
 ; Custom animation with Animate.css -- https://animate.style/
 ; the difference is it will animate from the position of the msg popup
-
-```ahk
 ; since the neutron wnd is not full screen
 JS =
 (LTrim Join`n
@@ -374,12 +373,11 @@ JS =
 Swal.fire(JS)
 ```
 
-;
-; Some custom made examples
-;
-; Ctrl X will close the window
-; Ctrl C will click clipboard
-; Enter will hit submit
+## Some custom made examples
+
+- Ctrl X will close the window
+- Ctrl C will click clipboard
+- Enter will hit submit
 
 ```ahk
 ; Created a Percentage Diff Calculator
