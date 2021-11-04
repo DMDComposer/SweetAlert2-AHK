@@ -1,6 +1,6 @@
 ﻿; swal.ahk v0.1.0
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
-; Link to github here...
+; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
 ; MIT License
 ;
@@ -25,11 +25,11 @@
 ; -----------------------Great SweetAlert2 References---------------------------
 ; Variables list for Stylessheet https://github.com/sweetalert2/sweetalert2/blob/master/src/variables.scss
 ; Homepage with bunch of examples https://sweetalert2.github.io/
-; 
+
 ; SweetAlert2 10.16.7
 ; Swal2 stopped support for legacy JS so for the time being with neutron being 
 ; limited to only legacy JS, we are stuck with this version.
-;
+
 ; Swal Speed Statistics
 ; 129.41 ms Maestrith Msgbox "m()"
 ; 220.55 ms without FontAwesome Pro / Free (52.08% increase from m() function)
@@ -41,13 +41,13 @@
 ; the following is just a quick way to always access swal msgbox without
 ; the need to have an #Include <swal>. Just make sure the swal.ahk is still
 ; within your ahk lib folder.
-;
+
 ; SweetAlert2 Custom Hotkeys if using DefaultActions / CustomClass
 ; "Esc" will close Swal2 Msgbox and return to the next line in AHK script.
 ; "Enter" will confirm on the focused button
 ; "Ctrl+C" will click Clipboard button (or denied button)
 ; "Ctrl+X" will ExitApp
-;
+
 ; --- Neutron ---
 ; Updated Neutron to allow communication to Swal2
 ; in the __New method & Load method within neutron's class I added 
