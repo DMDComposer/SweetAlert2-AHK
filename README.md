@@ -70,7 +70,7 @@ Swal.toast("string",{options}[,wait := "0",sleep := "0"])
 
 ## Default & Dark Mode, THEMES! 🌚
 
-![Swal2 "Fire" MsgBox]((https://github.com/DMDComposer/SweetAlert2-AHK/blob/main/image.jpg?raw=true)
+![Light & Dark Mode Comparison](SweetAlert2/images/ex_Light %26 Dark Theme.PNG)
 
 - Set in the options object, {theme:dark} you can enable a bunch of themes
 - by default, light/dark mode will trigger based on the time of day. I set it to turn to dark from 7pm - 7am
