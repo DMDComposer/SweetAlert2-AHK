@@ -1,0 +1,129 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  overflow: hidden !important;
+  /* background-color: #19191a; */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/*** Swal Custom Properties ***/
+/* .swal2-popup.swal2-toast {
+  overflow: hidden !important;
+}
+
+.swal2-popup.swal2-toast .swal2-input {
+  overflow: hidden !important;
+}
+
+.swal2-popup.swal2-toast.swal2-show {
+  overflow: hidden !important;
+}
+
+.swal2-input {
+  overflow: hidden !important;
+}
+ */
+.swal-css {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide horizontal scrollbar */
+.swal2-container,
+.swal2-html-container,
+.swal-toast-container {
+  overflow: hidden !important;
+}
+
+/* Needs to be here because some themes override this */
+.swal-toast-container {
+  width: auto !important;
+  height: auto !important;
+}
+
+/*** Swal Custom Toast Colors ***/
+.colored-toast.swal2-icon-success {
+  background-color: #a5dc86 !important;
+}
+
+.colored-toast.swal2-icon-error {
+  background-color: #f27474 !important;
+}
+
+.colored-toast.swal2-icon-warning {
+  background-color: #f8bb86 !important;
+}
+
+.colored-toast.swal2-icon-info {
+  background-color: #3fc3ee !important;
+}
+
+.colored-toast.swal2-icon-question {
+  background-color: #87adbd !important;
+}
+
+.colored-toast .swal2-title,
+.colored-toast .swal2-close,
+.colored-toast .swal2-html-container {
+  color: white;
+}
+
+.colored-toast .swal2-timer-progress-bar {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* this needs to be here because somehow my script was deleting
+this info in the toasts only */
+.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
+  display: flex;
+  align-items: center;
+  font-size: 1.8em !important;
+  font-weight: 700;
+}
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .swal2-popup.swal2-toast .swal2-icon .swal2-icon-content {
+    font-size: 0.25em;
+  }
+}
+
+/* make sure backdrop is transparent aka nuetron IE window */
+.swal2-backdrop-show {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+/* Adds missing bottom padding that's in original Swal2 */
+.swal2-actions {
+  /* padding-bottom: 1.25em !important; */
+}
+.swal2-container > .swal2-actions {
+  padding-bottom: 1.25em !important;
+}
+/* this removes the slight border around the swal2-container */
+.swal2-popup {
+  box-shadow: none !important;
+}
+
+/* if w/h is set to 100%, then text can scale
+can't figure out how to auto set this
+based on text within popup */
+
+.swal2-popup {
+  /* grid-column: 2 !important; */
+  max-width: 100% !important;
+  display: flex !important;
+  /* overflow-x: hidden; */
+  /* overflow-y: auto; */
+  /* display: table-row !important; */
+  /* width: 100% !important; */
+  /* height: 100% !important; */
+  /* margin: auto !important; */
+  /* padding: 0 0 1.25em !important; */
+}

@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- scripts -->
+    <script src="./includes/jquery.min.js"></script>
+    <script src="./includes/bootstrap.min.js"></script>
+    <!-- <script src="./Includes/elasticlunr.min.js"></script> -->
+    <!-- <script src="./scripts.js"></script> -->
+    <!-- <script src="./searchFilters.js"></script> -->
+    <script src="./includes/fontawesome-free/js/all.min.js"></script>
+    <!-- <script src="./includes/font-awesome-pro-master/js/pro.min.js"></script>
+      <link
+      rel="stylesheet"
+      href="./includes/font-awesome-pro-master/css/all.min.css"
+      /> -->
+    <!-- Fetch API & ES6 Promise Return Handlers -->
+    <script src="./includes/fetch-polyfill/fetch.js"></script>
+    <script src="./includes/es6-promise/dist/es6-promise.min.js"></script>
+    <script src="./includes/es6-promise/dist/es6-promise.auto.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="./includes/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="./includes/sweetalert2/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="./includes/sweetalert2/sweetalert2.min.css" />
+    <link
+      rel="stylesheet"
+      href="./includes/animate.css-4.1.1/animate.min.css"
+    />
+    <link rel="stylesheet" href="./includes/styles.css" />
+    <!-- Include the Borderless theme -->
+    <!-- <link
+      rel="stylesheet"
+      href="./includes/sweetalert2/themes/dark/dark.min.css"
+    /> -->
+    <script>
+      ;(function ($) {
+        $.fn.innerText = function (msg) {
+          if (msg) {
+            if (document.body.innerText) {
+              for (var i in this) {
+                this[i].innerText = msg
+              }
+            } else {
+              for (var i in this) {
+                this[i].innerHTML
+                  .replace(/&amp;lt;br&amp;gt;/gi, "n")
+                  .replace(/(&amp;lt;([^&amp;gt;]+)&amp;gt;)/gi, "")
+              }
+            }
+            return this
+          } else {
+            if (document.body.innerText) {
+              return this[0].innerText
+            } else {
+              return this[0].innerHTML
+                .replace(/&amp;lt;br&amp;gt;/gi, "n")
+                .replace(/(&amp;lt;([^&amp;gt;]+)&amp;gt;)/gi, "")
+            }
+          }
+        }
+      })(jQuery)
+      function onReady(event) {
+        // ahk.Swal.SwalTest("neutron TESTING MSG")
+        ahk.getSwalMsg(event)
+      }
+      function getFaIcon(icon) {
+        return '<i class="fa fa-' + icon + '"></i>' + " " // icon + spacer
+      }
+      $(document).keyup(function (event) {
+        // Enable Enter Key for MsgPopup, currently only need keyup not keydown+keyup
+        if (event.keyCode == 13) {
+          Swal.clickConfirm()
+        }
+        // Ctrl+C will click Clipboard button (or denied button)
+        if (event.keyCode == 67 && event.ctrlKey) {
+          Swal.clickDeny()
+        }
+        // Ctrl+X will ExitApp
+        if (event.keyCode == 88 && event.ctrlKey) {
+          Swal.clickCancel()
+        }
+        // Esc key will close neutron instead of closing Swal
+        if (event.keyCode == 27) {
+          ahk.swalEscapeKey(event)
+        }
+        // alt+F12 key will open developer tools
+        if (event.keyCode == 123) {
+          ahk.runIEChooser(event)
+        }
+      })
+      // get all computed CSS properties
+      function getStyleById(id) {
+        let e = document.querySelector(id)
+        var s = ""
+        var o = getComputedStyle(e)
+        for (var i = 0; i < o.length; i++) {
+          s += o[i] + ":" + o.getPropertyValue(o[i]) + ";"
+        }
+        return s
+      }
+
+      /*
+           $(document).ready(function () {
+             // If Dark theme change background of IE Body
+             if (
+               $("link[href='./includes/sweetalert2/themes/dark/dark.min.css']")
+                 .length
+             ) {
+               $(document.body).css({ background: "#19191A" })
+             }
+           })
+           */
+      // Focus Submit Key for Swal
+      // $(document).focus()
+    </script>
+  </head>
+
+  <body onmousedown="neutron.DragTitleBar()">
+    <!-- Title Bar -->
+    <header>
+      <!-- <span class="title-bar" onmousedown="neutron.DragTitleBar()"
+        >Neutron</span
+      > -->
+      <!-- <span class="title-btn" onclick="neutron.Minimize()">0</span> -->
+      <!-- <span class="title-btn" onclick="neutron.Maximize()">1</span> -->
+      <!-- <span class="title-btn title-btn-close" onclick="neutron.Close()">r</span> -->
+    </header>
+    <!-- Main content area -->
+    <div class="container-flex" id="SwalMsgDiv">
+      <div class="row">
+        <div class="col-md-12"></div>
+      </div>
+    </div>
+    <!-- /container -->
+    <!-- /main -->
+  </body>
+</html>

@@ -1,0 +1,99 @@
+{
+  "_from": "@sweetalert2/themes",
+  "_id": "@sweetalert2/themes@5.0.7",
+  "_inBundle": false,
+  "_integrity": "sha512-PGfW6t/rFjFhMMyPuA6OduODDd9PV4hGMcdBQ4+5VUYr45gSvDIIlpJpX/cZ9KkQdpiqrLV/39wcDP74hBt/zw==",
+  "_location": "/@sweetalert2/themes",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "@sweetalert2/themes",
+    "name": "@sweetalert2/themes",
+    "escapedName": "@sweetalert2%2fthemes",
+    "scope": "@sweetalert2",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/@sweetalert2/themes/-/themes-5.0.7.tgz",
+  "_shasum": "ebfa80cb25197e8eb1066c9478f6b2abb6af772d",
+  "_spec": "@sweetalert2/themes",
+  "_where": "D:\\Users\\Dillon\\Downloads\\New Folder",
+  "author": {
+    "name": "Limon Monte",
+    "email": "limon.monte@gmail.com",
+    "url": "https://limonte.github.io"
+  },
+  "bugs": {
+    "url": "https://github.com/sweetalert2/sweetalert2-themes/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Giuseppe Verni",
+      "url": "https://github.com/gverni"
+    },
+    {
+      "name": "Morgan Touverey-Quilling",
+      "email": "mtouverey@alembic-dev.com",
+      "url": "https://github.com/toverux"
+    },
+    {
+      "name": "Joseph Schultz",
+      "url": "https://github.com/acupajoe"
+    },
+    {
+      "name": "Matthew Francis Brunetti",
+      "email": "zenflow87@gmail.com",
+      "url": "https://github.com/zenflow"
+    }
+  ],
+  "deprecated": false,
+  "description": "Themes for SweetAlert2",
+  "devDependencies": {
+    "@sweetalert2/execute": "^1.0.1",
+    "@sweetalert2/stylelint-config": "^1.1.23",
+    "browser-sync": "^2.27.5",
+    "fancy-log": "^1.3.3",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-header": "^2.0.9",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^5.0.0",
+    "gulp-stylelint": "^13.0.0",
+    "replace-in-file": "^6.0.0",
+    "sass": "^1.43.2",
+    "stylelint": "^13.12.0",
+    "sweetalert2": "^11.1.4"
+  },
+  "homepage": "https://sweetalert2.github.io/",
+  "keywords": [
+    "sweetalert2",
+    "theme",
+    "themes",
+    "theming",
+    "sass"
+  ],
+  "license": "MIT",
+  "name": "@sweetalert2/themes",
+  "peerDependencies": {
+    "sweetalert2": "^11.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sweetalert2/sweetalert2-themes.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "create-new-theme": "node tools/create-new-theme.js",
+    "lint": "gulp lint",
+    "start": "gulp watch"
+  },
+  "version": "5.0.7"
+}
