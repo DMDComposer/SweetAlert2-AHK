@@ -1,11 +1,10 @@
 # SweetAlert2-AHK 🍩
 
-SweetAlert2 Ported to AHK powered from G33kdude's Neutron Class
+SweetAlert2 Ported to AHK powered from [G33kdude's Neutron Class](https://github.com/G33kDude/Neutron.ahk)
 
-Swal2 "Fire" MsgBox  
-![Swal2 "Fire" MsgBox](https://miro.medium.com/max/734/1*Qzs7Jpu8fa_rgmx2ljC6qQ.png)  
-Swal2 "Toast" Notification  
-![Swal2 "Fire" MsgBox](https://user-images.githubusercontent.com/14294794/114370400-ba14a880-9b7f-11eb-8b20-e0082dfc46df.png)
+| Swal2 "<span style="color:orange">Fire</span>" MsgBox                                | Swal2 "<span style="color:purple">Toast</span>" Notification                                                                  |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| ![Swal2 "Fire" MsgBox](https://miro.medium.com/max/734/1*Qzs7Jpu8fa_rgmx2ljC6qQ.png) | ![Swal2 "Fire" MsgBox](https://user-images.githubusercontent.com/14294794/114370400-ba14a880-9b7f-11eb-8b20-e0082dfc46df.png) |
 
 ## Great SweetAlert2 References
 
@@ -19,15 +18,15 @@ Swal2 "Toast" Notification
 
 **Swal2 Speed Statistics** 🏃‍♂️
 
-- **129.41 ms** Maestrith Msgbox "m()"
-- **220.55 ms** without FontAwesome Pro / Free (52.08% increase from m() function)
-- **265.75 ms** with FontAwesome Free (18.59% increase from without)
-- **586.64 ms** with FontAwesome Pro (90.71% increase from without)
+- <span style="color:lightgreen">**129.41 ms**</span> [Maestrith Msgbox](https://github.com/maestrith/HTML-MsgBox) "`m()`"
+- <span style="color:lime">**220.55 ms**</span> Swal2 Msgbox without FontAwesome Pro / Free (52.08% increase from `m()` function)
+- <span style="color:green">**265.75 ms**</span> with FontAwesome Free (18.59% increase from without)
+- <span style="color:orange">**586.64 ms**</span> with FontAwesome Pro (90.71% increase from without)
 - _the more stylesheets you load (especially from Web not Local) will increase time delay_
 
 ## ------------------------Info & Resources---------------------------
 
-the following is just a quick way to always access swal msgbox without the need to have an #Include <swal>. Just make sure the swal.ahk is still within your ahk lib folder.
+The following is just a quick way to always access swal msgbox without the need to have an #Include <swal>. Just make sure the swal.ahk is still within your ahk lib folder.
 
 ```ahk
 swal := swal()
@@ -39,10 +38,11 @@ swal() {
 
 ### SweetAlert2 Custom Hotkeys if using DefaultActions / CustomClass 🎮
 
-- "**Esc**" will close Swal2 Msgbox and return to the next line in AHK script.
-- "**Enter**" will confirm on the focused button
-- "**Ctrl+C**" will click Clipboard button (or denied button)
-- "**Ctrl+X**" will ExitApp
+- _DefaultActions & CustomClass are enabled by default for most messages_
+  - "**Esc**" will close Swal2 Msgbox and return to the next line in AHK script.
+  - "**Enter**" will confirm on the focused button
+  - "**Ctrl+C**" will click Clipboard button (or denied button)
+  - "**Ctrl+X**" will ExitApp
 
 ## Swal2 Library Dependencies
 
@@ -68,7 +68,7 @@ Swal.fire("string",{options}[,wait := "1",defaultActions := "1", customClass := 
 Swal.toast("string",{options}[,wait := "0",sleep := "0"])
 ```
 
-## Default & Dark Mode, THEMES! 🌕🌚
+## THEMES - Light (Default) & Dark Mode 🌕🌚🌈
 
 ![Light & Dark Mode Comparison](SweetAlert2/images/ex_Light_Dark_Theme.PNG)
 
@@ -87,7 +87,12 @@ Swal.toast("string",{options}[,wait := "0",sleep := "0"])
 ## Swal2 Examples Converted to AHK
 
 - Examples taken top to bottom from https://sweetalert2.github.io/
-- As of 11/3/2021 not all below examples are working
+- As of 11/3/2021 not all below examples are working due to bugs / (not all themes play nice)
+
+> ⚠️ <span style="color:yellow">A couple things to note when converting:</span>
+>
+> - The main thing to look out for when trying to convert a Swal2 example to AHK is ES6 to Legacy JS. You can use a compiler to help but the most common example is converting **JS arrow functions** , _for example_: **=>**.
+> - As well, escaping characters correctly if using AHK continuation.
 
 ```ahk
 ; A basic message
@@ -533,3 +538,10 @@ swal.Toast("Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugiat non
 swal.Toast("PART five toasty",{timer:99000,icon:"info",colored:true},0)
 swal.Toast("PART six toasty",{timer:99000,icon:"success",colored:true},0)
 ```
+
+# Disclaimer 📝
+
+**Swal2-AHK** is still really early in Alpha. There are still bugs and things I need to work out. I'm not a professional programmer in any sense as coding is just a hobby which I recently picked up. Feel free to use, edit, or change the code and make suggestions/feedback to me. I'd be happy to hear them and if I can help approve this AHK class.
+
+Cheers,  
+DMDComposer
