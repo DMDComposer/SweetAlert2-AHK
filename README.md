@@ -68,6 +68,22 @@ Swal.fire("string",{options}[,wait := "1",defaultActions := "1", customClass := 
 Swal.toast("string",{options}[,wait := "0",sleep := "0"])
 ```
 
+## Default & Dark Mode, THEMES! 🌚
+
+![Swal2 "Fire" MsgBox]((https://github.com/DMDComposer/SweetAlert2-AHK/blob/main/image.jpg?raw=true)
+
+- Set in the options object, {theme:dark} you can enable a bunch of themes
+- by default, light/dark mode will trigger based on the time of day. I set it to turn to dark from 7pm - 7am
+- The available themes are (and you could create your own)
+  - bootstrap-4
+  - borderless
+  - bulma
+  - dark
+  - default
+  - material-ui
+  - minimal
+  - wordpress-admin
+
 ## Swal2 Examples Converted to AHK
 
 - Examples taken top to bottom from https://sweetalert2.github.io/
