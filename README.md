@@ -1,4 +1,4 @@
-# SweetAlert2-AHK
+# SweetAlert2-AHK 🍩
 
 SweetAlert2 Ported to AHK powered from G33kdude's Neutron Class
 
@@ -53,6 +53,13 @@ Updated Neutron to allow communication to Swal2 in the \_\_New method & Load met
 ### Geekdude's cJson
 
 - You could replace cJson with your own choosing of a JSON parser
+
+### Simple Use of Swal2 Class
+
+```ahk
+Swal.fire("msg",{title:"My Title",icon:"success"})
+Swal.toast("msg")
+```
 
 ## Swal2 Examples Converted to AHK
 

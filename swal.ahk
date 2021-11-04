@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.0
+﻿; swal.ahk v0.1.1
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -90,7 +90,6 @@ class SweetAlert2 {
 		; if user set options then update the oOptions object
 		this.setUserOptions(options, oOptions)
 		
-		
 		; msg
 		vCustomClass = ; Custom Class Options https://sweetalert2.github.io/#customClass
 	    	(LTrim Join`n
@@ -159,12 +158,13 @@ class SweetAlert2 {
    				event  := vFront "," (customClass ? vCustomClass : "") "})" (defaultActions ? vDefaultActions : "")
 			}
 			else {
-				msg   := (!msg ? oOptions.html : msg)
-				vIcon := Format("{:L}", oOptions.icon)
+				msg    := (!msg ? oOptions.html : msg)
+				vTitle := oOptions.title
+				vIcon  := Format("{:L}", oOptions.icon)
 				event = 
 	    			(LTrim Join`n
 	    				Swal.fire({
-	    						title: "",
+	    						title: "%vTitle%",
 								html: "%msg%",
 	    						icon: "%vIcon%",
 								allowEscapeKey: false,
