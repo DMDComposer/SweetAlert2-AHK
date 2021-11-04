@@ -61,6 +61,13 @@ Swal.fire("msg",{title:"My Title",icon:"success"})
 Swal.toast("msg")
 ```
 
+### Fire & Toast Method Parameters
+
+```ahk
+Swal.fire("string",{options}[,wait := "1",defaultActions := "1", customClass := "0"])
+Swal.toast("string",{options}[,wait := "0",sleep := "0"])
+```
+
 ## Swal2 Examples Converted to AHK
 
 - Examples taken top to bottom from https://sweetalert2.github.io/
