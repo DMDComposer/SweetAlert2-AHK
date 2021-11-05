@@ -6,54 +6,6 @@ SweetAlert2 Ported to AHK powered from [G33kdude's Neutron Class](https://github
 | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | ![Swal2 "Fire" MsgBox](https://miro.medium.com/max/734/1*Qzs7Jpu8fa_rgmx2ljC6qQ.png) | ![Swal2 "Fire" MsgBox](https://user-images.githubusercontent.com/14294794/114370400-ba14a880-9b7f-11eb-8b20-e0082dfc46df.png) |
 
-## Great SweetAlert2 References
-
-- Variables list for Stylessheet https://github.com/sweetalert2/sweetalert2/blob/master/src/variables.scss
-- Homepage with bunch of examples https://sweetalert2.github.io/
-
-**SweetAlert2 10.16.7** 🍩
-
-- Swal2 stopped support for legacy JS so for the time being with neutron
-  limited to only legacy JS, we are stuck with this version.
-
-**Swal2 Speed Statistics** 🏃‍♂️
-
-- <span style="color:lightgreen">**129.41 ms**</span> [Maestrith Msgbox](https://github.com/maestrith/HTML-MsgBox) "`m()`"
-- <span style="color:lime">**220.55 ms**</span> Swal2 Msgbox without FontAwesome Pro / Free (52.08% increase from `m()` function)
-- <span style="color:green">**265.75 ms**</span> with FontAwesome Free (18.59% increase from without)
-- <span style="color:orange">**586.64 ms**</span> with FontAwesome Pro (90.71% increase from without)
-- _the more stylesheets you load (especially from Web not Local) will increase time delay_
-
-## ------------------------Info & Resources---------------------------
-
-The following is just a quick way to always access swal msgbox without the need to have an #Include <swal>. Just make sure the swal.ahk is still within your ahk lib folder.
-
-```ahk
-swal := swal()
-swal() {
-	static newSwal2Instance := new SweetAlert2()
-	return newSwal2Instance
-}
-```
-
-### SweetAlert2 Custom Hotkeys if using DefaultActions / CustomClass 🎮
-
-- _DefaultActions & CustomClass are enabled by default for most messages_
-  - "**Esc**" will close Swal2 Msgbox and return to the next line in AHK script.
-  - "**Enter**" will confirm on the focused button
-  - "**Ctrl+C**" will click Clipboard button (or denied button)
-  - "**Ctrl+X**" will ExitApp
-
-## Swal2 Library Dependencies
-
-### G33kdude's Neutron 🌍
-
-Updated Neutron to allow communication to Swal2 in the \_\_New method & Load method within neutron's class I added the same line to each to allow sending a new instance command to the swal2 class `"this.wnd.swal := new SweetAlert2()"`
-
-### Geekdude's cJson
-
-- You could replace cJson with your own choosing of a JSON parser
-
 ## Simple Use of Swal2 Class
 
 ```ahk
@@ -105,6 +57,44 @@ Swal.toast("msg",{options}[,wait := "0",sleep := "0"])
   - Only on the toast messages and default is 0
   - This is in case a toast notification for example is your last line in a script before the script will close/exitApp. If you exitApp with sleep 0 then the toast msg will be destroyed instantly before even the timer ceases. So, to make up you can set the sleep to a specific amount to compensate for this oddity.
 
+# ------------------------Info & Resources---------------------------
+
+## Great SweetAlert2 References
+
+- Variables list for Stylessheet https://github.com/sweetalert2/sweetalert2/blob/master/src/variables.scss
+- Homepage with bunch of examples https://sweetalert2.github.io/
+
+**SweetAlert2 10.16.7** 🍩
+
+- Swal2 stopped support for legacy JS so for the time being with neutron
+  limited to only legacy JS, we are stuck with this version.
+
+**Swal2 Speed Statistics** 🏃‍♂️
+
+- <span style="color:lightgreen">**129.41 ms**</span> [Maestrith Msgbox](https://github.com/maestrith/HTML-MsgBox) "`m()`"
+- <span style="color:lime">**220.55 ms**</span> Swal2 Msgbox without FontAwesome Pro / Free (52.08% increase from `m()` function)
+- <span style="color:green">**265.75 ms**</span> with FontAwesome Free (18.59% increase from without)
+- <span style="color:orange">**586.64 ms**</span> with FontAwesome Pro (90.71% increase from without)
+- _the more stylesheets you load (especially from Web not Local) will increase time delay_
+
+The following is just a quick way to always access swal msgbox without the need to have an #Include <swal>. Just make sure the swal.ahk is still within your ahk lib folder.
+
+```ahk
+swal := swal()
+swal() {
+	static newSwal2Instance := new SweetAlert2()
+	return newSwal2Instance
+}
+```
+
+### SweetAlert2 Custom Hotkeys if using DefaultActions / CustomClass 🎮
+
+- _DefaultActions & CustomClass are enabled by default for most messages_
+  - "**Esc**" will close Swal2 Msgbox and return to the next line in AHK script.
+  - "**Enter**" will confirm on the focused button
+  - "**Ctrl+C**" will click Clipboard button (or denied button)
+  - "**Ctrl+X**" will ExitApp
+
 ## THEMES - Light (Default) & Dark Mode 🌕🌚🌈
 
 ![Light & Dark Mode Comparison](SweetAlert2/images/ex_Light_Dark_Theme.PNG)
@@ -120,6 +110,16 @@ Swal.toast("msg",{options}[,wait := "0",sleep := "0"])
   - material-ui
   - minimal
   - wordpress-admin
+
+## Swal2 Library Dependencies
+
+### G33kdude's Neutron 🌍
+
+Updated Neutron to allow communication to Swal2 in the \_\_New method & Load method within neutron's class I added the same line to each to allow sending a new instance command to the swal2 class `"this.wnd.swal := new SweetAlert2()"`
+
+### Geekdude's cJson
+
+- You could replace cJson with your own choosing of a JSON parser
 
 ## Swal2 Examples Converted to AHK
 
