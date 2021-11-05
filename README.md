@@ -57,8 +57,18 @@ Updated Neutron to allow communication to Swal2 in the \_\_New method & Load met
 ### Simple Use of Swal2 Class
 
 ```ahk
+; first param can be a string seperated by commas. Swal2 accepts 3 params in order
+; Title, Msg, Icon
+; note that if you add an extra comma you'll break the script and best then to use the more detailed option below.
+Swal.fire("title,msg,icon")
+; Msg in the first param, and options as an obj in the 2nd param.
 Swal.fire("msg",{title:"My Title",icon:"success"})
+
+; Sample of a toast msg
 Swal.toast("msg")
+
+; Sample of more advanced Toast
+Swal.fire("",{title:"Question?",html:"You clicked the <b style='color:#87ADBD;'>Question</b> button!",icon:"question",position:"top-right"},1)
 ```
 
 ### Fire & Toast Method Parameters
