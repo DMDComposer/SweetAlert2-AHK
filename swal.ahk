@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.1
+﻿; swal.ahk v0.1.2
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -90,6 +90,7 @@ class SweetAlert2 {
 		; if user set options then update the oOptions object
 		this.setUserOptions(options, oOptions)
 		
+		
 		; msg
 		vCustomClass = ; Custom Class Options https://sweetalert2.github.io/#customClass
 	    	(LTrim Join`n
@@ -129,11 +130,12 @@ class SweetAlert2 {
 				; vFront := SubStr(event, 1, StrLen(event)-2)
    				event  := RTrim(event,"`n") (customClass ? vCustomClass ",})" : "") (defaultActions ? vDefaultActions : "")
 			}
-			else if (msg ~= "," && (msg ~= ",") <= 2) {
+			else if (msg ~= ",") {
 				oMsg := []
 				for key,value in StrSplit(msg,",") {
 					oMsg.push(LTrim(value))
 				}
+				; m(oMsg)
 				msgTitle := oMsg.1
 				msgHtml  := oMsg.2
 				msgIcon  := oMsg.3
@@ -182,15 +184,21 @@ class SweetAlert2 {
 			}
 		}
 	    if (IsObject(msg)) {
-			msg := this.getObj2String(msg)
-			msg := this.getEscapedJS(msg)
-			msg := StrReplace(msg, "\n", "<br>")
+			; msg := this.getObj2String(msg)
+			; msg := this.getEscapedJS(msg)
+			; msg := StrReplace(msg, "\n", "<br>")
+			oMsg     := msg
+			title    := oMsg.1
+			msg      := oMsg.2
+			msgTitle := (title ? title : msg)
+			msgHtml  := (msgTitle = msg ? "" : msg)
+			msgIcon  := (!oMsg.3 ? "question" : oMsg.3)
 			event = 
 	    			(LTrim Join`n
 	    				Swal.fire({
-	    						title: "%msg%",
-								html: "",
-	    						icon: "question",
+	    						title: "%msgTitle%",
+								html: "%msgHtml%",
+	    						icon: "%msgIcon%",
 								allowEscapeKey: false,
 								showDenyButton: true,
 								showCancelButton: true,
@@ -252,6 +260,8 @@ class SweetAlert2 {
 		iconColor := (colored ? "white" : "")
 		popup     := (colored ? "colored-toast" : "")
 		wndStack  := (stack = 0 ? stack : 1)
+		title     := (title ? title : msg)
+		msg       := (title = msg ? "" : msg)
 		; Creating Toast defaults and timerClose, communicating with ahkTimer as well
 		vAHKTimer =
 		(
