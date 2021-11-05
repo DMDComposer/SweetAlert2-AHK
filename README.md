@@ -57,7 +57,7 @@ Swal.toast("msg",{options}[,wait := "0",sleep := "0"])
   - Only on the toast messages and default is 0
   - This is in case a toast notification for example is your last line in a script before the script will close/exitApp. If you exitApp with sleep 0 then the toast msg will be destroyed instantly before even the timer ceases. So, to make up you can set the sleep to a specific amount to compensate for this oddity.
 
-# ------------------------Info & Resources---------------------------
+# ---Info & Resources---
 
 ## Great SweetAlert2 References
 
