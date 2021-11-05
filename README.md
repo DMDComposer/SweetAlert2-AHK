@@ -54,7 +54,7 @@ Updated Neutron to allow communication to Swal2 in the \_\_New method & Load met
 
 - You could replace cJson with your own choosing of a JSON parser
 
-### Simple Use of Swal2 Class
+## Simple Use of Swal2 Class
 
 ```ahk
 ; first param can be a string seperated by commas. Swal2 accepts 3 params in order
@@ -74,9 +74,36 @@ Swal.fire("",{title:"Question?",html:"You clicked the <b style='color:#87ADBD;'>
 ### Fire & Toast Method Parameters
 
 ```ahk
-Swal.fire("string",{options}[,wait := "1",defaultActions := "1", customClass := "0"])
-Swal.toast("string",{options}[,wait := "0",sleep := "0"])
+Swal.fire("msg",{options}[,wait := "1",defaultActions := "1", customClass := "0"])
+Swal.toast("msg",{options}[,wait := "0",sleep := "0"])
 ```
+
+- **Message** 💬
+  - A String which can anything, and also including specific params. Swal2 accepts 3 params in order
+    - Title, Msg, Icon
+  - Can also be an object/array and show the contents automatically using `Obj2String function`
+- **Options** ⚙️
+  - Add any option Swal2 can handle
+  - Default options are set as following
+    - icon:"success"
+    - timer:"1500"
+    - iconColor:""
+    - showCloseButton:true
+    - theme:""
+    - colored:false
+- **Wait** 🛑
+  - Enabled by default: If Swal2 Msgbox is used in a script, the wait will pause the script if the msgbox is called upon, if off then the msgbox will be called but the script will continue.
+- **DefaultActions** ✅
+  - This adds a .then function to the end of the Swal2 instance. Default is on.
+  - Its what adds the basic 3 buttons (which you could add more of your own choosing)
+    - Ok = isConfirm which will exitSwal
+    - Copy to Clipboard = isDenied = Copy msg to the Clipboard than exitSwal
+    - ExitApp = isDismissed = ExitApp of the whole script and not execute the next line
+- **CustomClass** 🏛️
+  - adds a customClass that you can call upon for custom CSS settings. Currently default is off.
+- **Sleep** 💤
+  - Only on the toast messages and default is 0
+  - This is in case a toast notification for example is your last line in a script before the script will close/exitApp. If you exitApp with sleep 0 then the toast msg will be destroyed instantly before even the timer ceases. So, to make up you can set the sleep to a specific amount to compensate for this oddity.
 
 ## THEMES - Light (Default) & Dark Mode 🌕🌚🌈
 
