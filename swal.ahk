@@ -184,9 +184,28 @@ class SweetAlert2 {
 			}
 		}
 	    if (IsObject(msg)) {
-			; msg := this.getObj2String(msg)
-			; msg := this.getEscapedJS(msg)
-			; msg := StrReplace(msg, "\n", "<br>")
+			; convert obj to string and display as a message
+			msg := this.getObj2String(msg)
+			msg := this.getEscapedJS(msg)
+			msg := StrReplace(msg, "\n", "<br>")
+			event = 
+				(LTrim Join`n
+					Swal.fire({
+							title: "%msg%",
+							html: "",
+							icon: "info",
+							allowEscapeKey: false,
+							showDenyButton: true,
+							showCancelButton: true,
+							confirmButtonText: this.getFaIcon("check-square") + ' Ok',
+							cancelButtonText: this.getFaIcon("window-close") + ' ExitApp',
+							cancelButtonColor: '#d33',
+							denyButtonText: this.getFaIcon("edit") + ' Clipboard',
+							denyButtonColor: "#D0A548"
+						})
+				) 
+			/* 
+			; convert simple array of title/msg/icon into swal
 			oMsg     := msg
 			title    := oMsg.1
 			msg      := oMsg.2
@@ -209,6 +228,7 @@ class SweetAlert2 {
 								denyButtonColor: "#D0A548"
 	    					})
 	    			) 
+			 */
 			vFront := SubStr(event, 1, StrLen(event)-2)
 			event  := vFront "," (customClass ? vCustomClass : "") "})" (defaultActions ? vDefaultActions : "")
 			/* 
