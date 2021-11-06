@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.2
+﻿; swal.ahk v0.1.3
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -68,9 +68,11 @@ class SweetAlert2 {
 		; with Neutron GUIs. Using them is the current best practice for handling these
 		; types of events. Here, we're using the name NeutronClose because the GUI was
 		; given a custom label prefix up in the auto-execute section.
+		/* 
 		NeutronClose:
 		ExitApp
-		return
+		return 
+		*/
     }
     __Delete() {
         this.Quit()
@@ -333,7 +335,7 @@ class SweetAlert2 {
         return this.resultValue
     }
 	createNeutronWindow(event,type,focus := "1",wndPosition := "bottom-right",toastColored := "", theme := "light", color := "", titleColor := "", wndStack := 1) {
-		neutron := new NeutronWindow()         ; Create a new NeutronWindow and navigate to our HTML page
+		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
 		neutron.Load("SweetAlert2\index.html")
 		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
 		neutron.Gui("+LabelSwal2MsgBox")       ; Use the Gui method to set a custom label prefix for GUI events. This code is equivalent to the line `Gui, name:+LabelNeutron` for a normal GUI.
@@ -810,7 +812,7 @@ runIEChooser(neutron,event) { ; with F12 open debug options for neutron
 ; SOFTWARE.
 ;
 
-class NeutronWindow
+class NeutronWindowforSwal2
 {
 	static TEMPLATE := "
 	( ; html
