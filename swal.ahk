@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.3
+﻿; swal.ahk v0.1.4
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -107,14 +107,14 @@ class SweetAlert2 {
 	    		.then(function (result) {
 	    			if (result.isConfirmed) {
 	    				//ahk.showSwalMsg(result.value)
-						ahk.exitSwal()
+						swal.exitSwal(neutron)
 	    			}
 	    			if (result.isDenied) {
-	    				ahk.setClipboard(result.value)
-						ahk.exitSwal()
+	    				swal.setClipboard(neutron, result.value)
+						swal.exitSwal(neutron)
 	    			}
 					if (result.isDismissed) {
-						ahk.exitApp()
+						swal.exitApp(neutron)
 					}
 	    		})
 	    	)
@@ -290,7 +290,7 @@ class SweetAlert2 {
 			var ahkTimer
     		function ahkExitTimer() {
 				ahkTimer = setTimeout(function () {
-					ahk.exitSwal()
+					swal.exitSwal(neutron)
 				}, (Swal.getTimerLeft() ? Swal.getTimerLeft() : %timer%))
     		}
 			ahkExitTimer()
@@ -716,27 +716,52 @@ class SweetAlert2 {
 		; To return use as object, for example m(Text.l) will produce lowercase text
 		return Object("L",l,"U",u,"T",t)
 	}
+	debugEval(event) {
+		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
+		neutron.Load("SweetAlert2\index.html")
+		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
+		neutron.Gui("+LabelSwal2MsgBox")       ; Use the Gui method to set a custom label prefix for GUI events. This code is equivalent to the line `Gui, name:+LabelNeutron` for a normal GUI.
+		; neutron.wnd.Eval(event)
+		return
+	}
+	testing() {
+		msgbox % "you've made it"
+	}
+	exitApp(neutron) {
+		neutron.Destroy()
+		ExitApp
+		return
+	}
+	swalEscapeKey(neutron,event) {
+		neutron.Destroy()
+		return
+	}
+	getSwalMsg(neutron, event) { ; this has to be here to communicate on startup
+		return neutron.wnd.eval(event)
+	}
+	runIEChooser() { ; with F12 open debug options for neutron
+		Run % A_ComSpec "\..\F12\IEChooser.exe",
+		WinWaitActive, ahk_exe IEChooser.exe
+		WinSet, AlwaysOnTop, On, ahk_exe IEChooser.exe
+	}
+	setClipboard(neutron,event) {
+		; might need to add an option if msg was obj then use innerText otherwise use text()
+		vTitle := neutron.wnd.eval("$("".swal2-title"").innerText()")
+		vHtml  := neutron.wnd.eval("$("".swal2-html-container"").innerText()")
+		; Clipboard := event ? event : neutron.wnd.eval("$("".swal2-title"").innerText()")
+		Clipboard := event ? event : (vHtml = "" ? vTitle : vHtml)
+		ClipWait, 1
+	}
+	exitSwal(neutron) {
+		neutron.Destroy()
+	}
+	testing(neutron,event) {
+		m("you've made it")
+		return neutron.wnd.eval(event)
+	}
 }
-testing(neutron,event) {
-	m("you've made it")
-	return neutron.wnd.eval(event)
-}
-swalEscapeKey(neutron,event) {
-	neutron.Destroy()
-	return
-}
+;
 ; --- Trigger AHK by page events ---
-getSwalMsg(neutron, event) { ; this has to be here to communicate on startup
-	return neutron.wnd.eval(event)
-}
-setClipboard(neutron,event) {
-	; might need to add an option if msg was obj then use innerText otherwise use text()
-	vTitle := neutron.wnd.eval("$("".swal2-title"").innerText()")
-	vHtml  := neutron.wnd.eval("$("".swal2-html-container"").innerText()")
-	; Clipboard := event ? event : neutron.wnd.eval("$("".swal2-title"").innerText()")
-	Clipboard := event ? event : (vHtml = "" ? vTitle : vHtml)
-	ClipWait, 1
-}
 showSwalMsg(neutron, event) {
 	neutron.Destroy()
 	neutron := new NeutronWindow()         ; Create a new NeutronWindow and navigate to our HTML page
@@ -763,29 +788,12 @@ showSwalMsg(neutron, event) {
 				html: "Updated <i>TITLE MESSAGE</i> to <b>BLAGRG!!!!</b> in the database.",
 		})
 		setTimeout(function() {
-				ahk.exitSwal()
+				swal.exitSwal(neutron)
 		}, %vTimer%);
 	)
 	return neutron.wnd.eval(JSAlert)
 }
-exitApp(neutron) {
-	neutron.Destroy()
-	ExitApp
-	return
-}
-exitSwal(neutron) {
-	neutron.Destroy()
-}
-runAHKScript(neutron,event) {
-	m(event)
-	; FileAppend, % event, % A_LineFile "\..\SweetAlert2\temp_runAHKScript"
-}
-runIEChooser(neutron,event) { ; with F12 open debug options for neutron
-	Run % A_ComSpec "\..\F12\IEChooser.exe",
-	WinWaitActive, ahk_exe IEChooser.exe
-	WinSet, AlwaysOnTop, On, ahk_exe IEChooser.exe
-}
-
+;
 ;
 ; Neutron.ahk v1.0.0
 ; Copyright (c) 2020 Philip Taylor (known also as GeekDude, G33kDude)
