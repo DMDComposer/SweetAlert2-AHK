@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.4
+﻿; swal.ahk v0.1.5
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -277,6 +277,8 @@ class SweetAlert2 {
 			%key% := oOptions[key]
 		}
 		; if value of position isn't in the allowed params of position, then ignore and place in default position
+		vYingYang := this.getCurrentTime()        ; if sun is not out then dark mode
+		theme     := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
 		icon      := !this.HasVal(oIconTypes, icon) ? "question" : icon
 		position  := !this.HasVal(oPositions, position) ? "bottom-right" : position
 		iconColor := (colored ? "white" : "")
@@ -724,7 +726,6 @@ class SweetAlert2 {
 		; neutron.wnd.Eval(event)
 		return
 	}
-	
 	exitApp(neutron) {
 		neutron.Destroy()
 		ExitApp
