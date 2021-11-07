@@ -724,9 +724,7 @@ class SweetAlert2 {
 		; neutron.wnd.Eval(event)
 		return
 	}
-	testing() {
-		msgbox % "you've made it"
-	}
+	
 	exitApp(neutron) {
 		neutron.Destroy()
 		ExitApp
@@ -755,9 +753,8 @@ class SweetAlert2 {
 	exitSwal(neutron) {
 		neutron.Destroy()
 	}
-	testing(neutron,event) {
-		m("you've made it")
-		return neutron.wnd.eval(event)
+	testing() {
+		msgbox % "you've made it"
 	}
 }
 ;
