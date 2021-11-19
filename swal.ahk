@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.1.5
+﻿; swal.ahk v0.2.1
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -32,7 +32,10 @@
 
 ; Swal Speed Statistics
 ; 129.41 ms Maestrith Msgbox "m()"
-; 220.55 ms without FontAwesome Pro / Free (52.08% increase from m() function)
+; 220.55 ms without Animations & Without FontAwesome Pro / Free (52.08% increase from m() function)
+; 319.26 ms with Window Animations Enabled & FontAwesome Free Disabled
+; 354.28 ms with Window Animations Enabled & FontAwesome Free Enabled
+; No window animations but Fontawesome enabled:
 ; 265.75 ms with FontAwesome Free (18.59% increase from without)
 ; 586.64 ms with FontAwesome Pro (90.71% increase from without)
 ; the more stylesheets you load (especially from Web not Local) will increase time delay
@@ -62,6 +65,12 @@ swal() {
 ; swal := new SweetAlert2()
 class SweetAlert2 {
     __New(options) {
+		this.ShowDelay := 40
+		this.ID        := 0
+		this.Margin    := Margin
+		this.Animation := {Bottom:0x00000008,Top:0x00000004,Left:0x00000001,Right:0x00000002,Slide:0x00040000,Center:0x00000010,Blend:0x00080000}
+		if(!this.Init)
+			OnMessage(0x201,SweetAlert2.Click.Bind(this)),this.Init:=1
         return this
 		FileInstall, SweetAlert2\index.html, SweetAlert2\index.html
 		; The built in GuiClose, GuiEscape, and GuiDropFiles event handlers will work
@@ -77,7 +86,7 @@ class SweetAlert2 {
     __Delete() {
         this.Quit()
     }
-    ; Methods
+    ; NOTE: Methods
     Fire(msg,options := "",wait := "1",defaultActions := "1", customClass := "0") {
 		static oOptions := {icon:"success"
 						   ,timer:"1500"
@@ -89,9 +98,11 @@ class SweetAlert2 {
 		oPositions := [ "top", "top-start", "top-end", "top-left", "top-right", "center", "center-start", "center-end", "center-left", "center-right", "bottom", "bottom-start", "bottom-end", "bottom-left", "bottom-right"]
 		oIconTypes := ["success", "warning", "info", "question", "error"]
 		
+		; clean msg
+		msg := this.escapeBackSlash(msg)
+
 		; if user set options then update the oOptions object
 		this.setUserOptions(options, oOptions)
-		
 		
 		; msg
 		vCustomClass = ; Custom Class Options https://sweetalert2.github.io/#customClass
@@ -260,7 +271,7 @@ class SweetAlert2 {
 		icon      := !this.HasVal(oIconTypes, icon) ? "question" : icon
 		position  := !this.HasVal(oPositions, position) ? "center" : position
 		iconColor := (colored ? "white" : "")
-		neutron   := this.createNeutronWindow(event,1,1,position,[icon,colored],theme,color,titleColor,stack)
+		neutron   := this.createNeutronWindow(event,1,1,position,[icon,colored],theme,color,titleColor,stack,animate)
 		this.setSwalIcons()
 		this.swalPause(wait)
 	    return
@@ -269,6 +280,9 @@ class SweetAlert2 {
 		static oOptions := {icon:"success",timer:"1500",iconColor:"",colored:false,focus:0}
 		oPositions := [ "top", "top-start", "top-end", "top-left", "top-right", "center", "center-start", "center-end", "center-left", "center-right", "bottom", "bottom-start", "bottom-end", "bottom-left", "bottom-right"]
 		oIconTypes := ["success", "warning", "info", "question", "error"]
+
+		; clean msg
+		msg := this.escapeBackSlash(msg)
 
 		; if user set options then update the oOptions object
 		this.setUserOptions(options, oOptions)
@@ -331,12 +345,13 @@ class SweetAlert2 {
 					html: "%msg%",
 			})
 		)
-		this.createNeutronWindow(vAHKTimer "`n" event,2,0,position,[icon,colored],theme,color,titleColor,wndStack,focus)
+		this.createNeutronWindow(vAHKTimer "`n" event,2,0,position,[icon,colored],theme,color,titleColor,wndStack,animate)
 		Sleep, % sleep
 		this.swalPause(wait)
         return this.resultValue
     }
-	createNeutronWindow(event,type,focus := "1",wndPosition := "bottom-right",toastColored := "", theme := "light", color := "", titleColor := "", wndStack := 1) {
+	createNeutronWindow(event,type,focus := "1",wndPosition := "bottom-right",toastColored := "", theme := "light", color := "", titleColor := "", wndStack := 1, animate := "") {
+		
 		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
 		neutron.Load("SweetAlert2\index.html")
 		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
@@ -351,8 +366,15 @@ class SweetAlert2 {
 
 		; if set theme change from default
 		this.getTheme(neutron,theme)
-		; m(neutron.wnd.eval("$("".swal2-container"").width()"))
-		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition)) : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA"))
+
+		; the hide is for the animateSwalWnd to take effect, the window is hidden and then it animates into effect
+		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition) " Hide") : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA Hide"))
+
+		
+		animate := (!animate ? (type = 1 ? "Center,Blend" : "Right,Slide") : animate)
+		this.animateSwalWnd(neutron, animate) 		
+
+		; neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition))
 
 		; Colored background for Toasts (for some reason code must be placed in this function to work)
 		if (toastColored.2) {
@@ -379,17 +401,62 @@ class SweetAlert2 {
 		(focus ? neutron.wnd.eval("$(document).focus()") : "")
 		return neutron
 	}
-
+	animateSwalWnd(neutron,options) {
+		; Siphoned from Maestrith's Notify Class
+		; Info := {Animate:"Right,Slide",ShowDelay:100}
+		Info := {Animate:options,ShowDelay:100}
+		if(!IsObject(Win := SweetAlert2.Windows))
+			Win := SweetAlert2.Windows := []
+		Hide := 0
+		for a,b in StrSplit(Info.Hide,",")
+			if(Val := this.Animation[b])
+				Hide|=Val
+		Info.Hide := Hide
+		DetectHiddenWindows,On
+		Owner := WinActive("A")
+		Main := neutron.UID()
+		Animation := {Bottom:0x00000008
+					, Top:0x00000004
+					, Left:0x00000001
+					, Right:0x00000002
+					, Center:0x00000010
+					, Slide:0x00040000
+					, Blend:0x00080000}
+		Flags := 0
+		for a,b in StrSplit(Info.Animate,",")
+			Flags|=Round(Animation[b])
+		DllCall("AnimateWindow","UInt",Main,"Int",(Info.ShowDelay?Info.ShowDelay:100),"UInt",(Flags?Flags:0x00000008|0x00000004|0x00040000|0x00000002))
+		Flags|=0x00010000,SweetAlert2.Windows[ID].Flags:=Flags
+		; NOTE: WinSet Resets has to be here, otherwise I expierenced a bug where GUI Titlebar would show up
+		WinSet, Style, -0xC00000, % this.wnd  ; -Caption
+		; WinSet, Style, -0x40000, % this.wnd   ; -Border
+		WinSet, Style, +0xC00000, % this.wnd  ; +Caption
+		; WinSet, Style, +0x40000, % this.wnd   ; +Border
+		DetectHiddenWindows,Off 
+	}
 	; static variables for targeting swal2 instances
-	static newUID := ""
-	static oldUID := ""
-	static wnd    := "" ; shorthand to grab current window
-
+	static newUID  := ""
+	static oldUID  := ""
+	static wnd     := "" ; shorthand to grab current window
+	static wndHwnd := "" ; this will always = neutron.UID()
+	Delete(Win){
+		Win := RegExReplace(Win,"\D")
+		if(WinExist("ahk_id" Win)){
+			DllCall("AnimateWindow","UInt",Win,"Int",Obj.ShowDelay,"UInt",Obj.Flags)
+			Gui,% Win ":Destroy"
+		}
+		this.SetPos()
+	}
+	Dismiss(wnd){
+		wnd := (!wnd ? (!this.oldUID ? this.wndHwnd : this.oldUID) : wnd)
+		this.Delete("ahk_id " wnd)
+	}
 	getSwalUID(UID := "") {
 		; Wanted to figure out a way to give each swal msg a unique ID
 		this.oldUID := (this.newUID ? this.newUID : "")
 		this.newUID := (UID ? UID : this.newUID)
 		this.wnd    := "ahk_id " this.newUID
+		this.wndHwnd := UID
 		return UID
 	}
 	getTheme(neutron,theme) {
@@ -465,7 +532,7 @@ class SweetAlert2 {
   				    rel: 'stylesheet',
   				    href: './includes/sweetalert2/themes/dark/dark.min.css'
   				})
-				$(document.body).css({ background: "#19191A" })
+				$(document.body).css({background: "#19191A"})
 				$(".swal2-success-fix,.swal2-success-circular-line-left,.swal2-success-circular-line-right").css({ background: "#19191A" })
 			)
 		}
@@ -505,7 +572,8 @@ class SweetAlert2 {
 		fwPopup  := neutron.wnd.eval("$("".swal2-popup"").width()")
 		fwModal  := neutron.wnd.eval("$("".swal2-modal"").width()")
 		; m(neutron.wnd.eval("$("".swal2-modal"").width()"))
-		return fwPopup
+		; 6 is the width from -Caption
+		return fwPopup + 6
 	}
 	fireHeight(neutron) {
 		; get Height of Popup before showing
@@ -521,12 +589,14 @@ class SweetAlert2 {
 		}
 		; m(neutron.wnd.eval("$("".swal2-footer"").height()"))
 		; m(neutron.wnd.eval("$("".swal2-html-container"").height()"))
-		return fhPopup + 42
+		; 29 is the width from -Caption
+		return fhPopup + 42 + 29
 	}
 	toastWidth(neutron) {
 		; get Width of Popup before showing
 		; m(neutron.wnd.eval("$("".swal2-html-container"").val()"))
-		return neutron.wnd.eval("$("".swal2-container"").width()")
+		; 6 is the width from -Caption
+		return neutron.wnd.eval("$("".swal2-container"").width()") + 6
 			;  + 29.01 ; Not sure why this number but from measuring final output of gui width this was the difference
 			; + neutron.wnd.eval("$("".swal2-toast"").width()")
 			; + neutron.wnd.eval("$("".swal2-title"").width()")
@@ -542,24 +612,39 @@ class SweetAlert2 {
 		return neutron.wnd.eval("$("".swal-toast-container"").height()") 
 			 + neutron.wnd.eval("$("".swal2-timer-progress-bar-container"").height()")
 			 + 17.17 ; not sure why this number
+			 + 29 ; is the width from -Caption
 			;  + neutron.wnd.eval("$("".swal2-header"").height()")
 			;  + neutron.wnd.eval("$("".swal2-content"").height()")
 			;  + neutron.wnd.eval("$("".swal2-container"").height()")
 	}
 	getSwalWndPos(w,h,pos := "bottom-right",wndStack := 1) {
 		Gui +LastFound +OwnDialogs +AlwaysOnTop ; keep toast messages always on top
+		Win := RegExReplace(this.wnd ,"\D")
+		Gui,% Win ":-Caption -Border +Resize -MaximizeBox -SysMenu" ; remove gui toolbar stuff otherwise Toast may have some animation problems
+		Gui,% Win ":", Color, EEAA99
+		WinSet, TransColor, EEAA99
+		; if -Caption, below figures out what the caption would've been calculated to
+		SysGet, captionW, 30
+		SysGet, captionH, 31
+		SysGet, captionFrameW, 7
+		SysGet, captionFrameH, 8
+		SysGet,Mon,MonitorWorkArea
+		minusCaptionW := captionW+captionFrameW
+		minusCaptionH := captionH+captionFrameH
+		; MW := MonRight - MonLeft
+		; MH := MonBottom - MonTop
+		; m(A_ScreenHeight,MH)
 		WinGetPos,,,,vTaskbarHeight, ahk_class Shell_TrayWnd ; Get Height of Windows Taskbar
-		WinGetPos, , , vAltWidth,, % "ahk_id " this.newUID
+		WinGetPos, , , vAltWidth, vAltHeight, % this.wnd
 		; if width from this.toastWidth() is less than 136, than grab the width from WinGetPos "vWidth"
 		if (w <= 136) {
 			w := vAltWidth
 		}
-
 		;set all the variables for positions/heights of the Toast Msg
 		vW := w
 		vH := h
 		vX := ((pos = "bottom-right" || pos = "top-right" || pos = "center-right") ? A_ScreenWidth - vW : 0)
-		vY := ((pos = "bottom-left" || pos = "bottom-right") ? A_ScreenHeight - (vH + vTaskbarHeight) : 0)
+		vY := ((pos = "bottom-left" || pos = "bottom-right") ? A_ScreenHeight - (vH + vTaskbarHeight) + minusCaptionH : 0)
 		if (pos = "center-left" || pos = "center-right") {
 			vY := ((A_ScreenHeight - vH)/2) - vTaskbarHeight
 		}
@@ -567,14 +652,25 @@ class SweetAlert2 {
 			vX := (A_ScreenWidth - vW)/2
 			vY := ((A_ScreenHeight - vH)/2) - vTaskbarHeight
 		}
-		if (this.previousSwalWnd() && wndStack) { ; if prevWnd X is the same as new X, then move wndY above prevY
+
+		; if prevWnd X is the same as new X, then move wndY above prevY
+		if (this.previousSwalWnd() && wndStack) {
 			WinGetPos,vPrevX, vPrevY,vPrevW, vPrevH, % "ahk_id " this.oldUID
 			; m(vPrevX,vPrevY,vPrevW,vPrevH,"new:",vX,vY,vW,vH)
 			; vY := (vPrevX != vX ? vY : (vPrevY - vH))
-			vY := vPrevY - vH
+			vY := vPrevY - vH + minusCaptionH
 		}
 		vPos := "w" vW " h" vH " x" vX " y" vY
 		return vPos
+	}
+	setWndFlash(neutron,wnd) {
+		; WIP to create window flash effect on nuetron gui
+		Obj        := this.wnd
+		m(neutron.wnd)
+		Obj.Bright := !Obj.Bright
+		Color      := Obj.Bright ? (Obj.FlashColor != "" ? Obj.FlashColor : Format("{:06x}",Obj.Background+800)) : Obj.Background
+		if (WinExist(wnd))
+			Gui,% "Color",%Color%,%Color% 
 	}
 	HasVal(haystack, needle) {
 		if !(IsObject(haystack)) || (haystack.Length() = 0)
@@ -753,6 +849,12 @@ class SweetAlert2 {
 	}
 	exitSwal(neutron) {
 		neutron.Destroy()
+	}
+	hideSwal(neutron,wnd) {
+		neutron.Hide(wnd)
+	}
+	escapeBackSlash(string){
+		return RegExReplace(string, "\\", "\\$1")
 	}
 	testing() {
 		msgbox % "you've made it"
@@ -1106,8 +1208,8 @@ class NeutronWindowforSwal2
 
 		; Inject the AHK objects into the JS scope
 		this.wnd.neutron := this
-		this.wnd.ahk := new this.Dispatch(this)
-		this.wnd.swal := new SweetAlert2() ; - DMD for SweetAlert2 Enabled
+		this.wnd.ahk     := new this.Dispatch(this)
+		this.wnd.swal    := new SweetAlert2() ; - DMD for SweetAlert2 Enabled
 
 		; Wait for the page to finish loading
 		while wb.readyState < 4
@@ -1369,6 +1471,7 @@ class NeutronWindowforSwal2
 			h += NumGet(&rect, 4, "Int")-NumGet(&rect, 12, "Int")
 
 			Gui, % this.hWnd ":Show", %options% w%w% h%h%
+			; Gui, % this.hWnd ":-Caption -SysMenu"
 		}
 
 		; Loads an HTML file by name (not path). When running the script uncompiled,
