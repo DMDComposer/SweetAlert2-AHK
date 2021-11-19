@@ -31,7 +31,7 @@
 ; limited to only legacy JS, we are stuck with this version.
 
 ; Swal Speed Statistics
-; 129.41 ms Maestrith Msgbox "m()"
+; 62.42 ms ms Maestrith Msgbox "m()"
 ; 220.55 ms without Animations & Without FontAwesome Pro / Free (52.08% increase from m() function)
 ; 319.26 ms with Window Animations Enabled & FontAwesome Free Disabled
 ; 354.28 ms with Window Animations Enabled & FontAwesome Free Enabled
@@ -39,6 +39,11 @@
 ; 265.75 ms with FontAwesome Free (18.59% increase from without)
 ; 586.64 ms with FontAwesome Pro (90.71% increase from without)
 ; the more stylesheets you load (especially from Web not Local) will increase time delay
+;
+; Toast Speed Statistics
+; 109.80 ms Maestrith Notify Class
+; 136.58 ms Swal.Toast without Window Animations
+; 233.78 ms Swal.Toast with Window Animations (the difference is actually made from the animation showDelay which default := 100ms)
 ; --------------------------SweetAlert2------------------------------
 ; ------------------------Info & Resources---------------------------
 ; the following is just a quick way to always access swal msgbox without
