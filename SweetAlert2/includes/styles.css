@@ -45,6 +45,7 @@ body {
 
 /* Needs to be here because some themes override this */
 .swal-toast-container {
+  min-width: 250px;
   width: auto !important;
   height: auto !important;
 }
