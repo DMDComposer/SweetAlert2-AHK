@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.2.1
+﻿; swal.ahk v0.2.2
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -31,7 +31,7 @@
 ; limited to only legacy JS, we are stuck with this version.
 
 ; Swal Speed Statistics
-; 62.42 ms ms Maestrith Msgbox "m()"
+; 129.41 ms Maestrith Msgbox "m()"
 ; 220.55 ms without Animations & Without FontAwesome Pro / Free (52.08% increase from m() function)
 ; 319.26 ms with Window Animations Enabled & FontAwesome Free Disabled
 ; 354.28 ms with Window Animations Enabled & FontAwesome Free Enabled
@@ -39,11 +39,6 @@
 ; 265.75 ms with FontAwesome Free (18.59% increase from without)
 ; 586.64 ms with FontAwesome Pro (90.71% increase from without)
 ; the more stylesheets you load (especially from Web not Local) will increase time delay
-;
-; Toast Speed Statistics
-; 109.80 ms Maestrith Notify Class
-; 136.58 ms Swal.Toast without Window Animations
-; 233.78 ms Swal.Toast with Window Animations (the difference is actually made from the animation showDelay which default := 100ms)
 ; --------------------------SweetAlert2------------------------------
 ; ------------------------Info & Resources---------------------------
 ; the following is just a quick way to always access swal msgbox without
@@ -105,7 +100,6 @@ class SweetAlert2 {
 		
 		; clean msg
 		msg := this.escapeBackSlash(msg)
-
 		; if user set options then update the oOptions object
 		this.setUserOptions(options, oOptions)
 		
@@ -178,7 +172,7 @@ class SweetAlert2 {
    				event  := vFront "," (customClass ? vCustomClass : "") "})" (defaultActions ? vDefaultActions : "")
 			}
 			else {
-				msg    := (!msg ? oOptions.html : msg)
+				msg    := (msg = "" ? oOptions.html : msg)
 				vTitle := oOptions.title
 				vIcon  := Format("{:L}", oOptions.icon)
 				event = 
@@ -371,7 +365,6 @@ class SweetAlert2 {
 
 		; if set theme change from default
 		this.getTheme(neutron,theme)
-
 		; the hide is for the animateSwalWnd to take effect, the window is hidden and then it animates into effect
 		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition) " Hide") : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA Hide"))
 
@@ -409,7 +402,7 @@ class SweetAlert2 {
 	animateSwalWnd(neutron,options) {
 		; Siphoned from Maestrith's Notify Class
 		; Info := {Animate:"Right,Slide",ShowDelay:100}
-		Info := {Animate:options,ShowDelay:100}
+		Info := {Animate:options,ShowDelay:50}
 		if(!IsObject(Win := SweetAlert2.Windows))
 			Win := SweetAlert2.Windows := []
 		Hide := 0
@@ -450,7 +443,7 @@ class SweetAlert2 {
 			DllCall("AnimateWindow","UInt",Win,"Int",Obj.ShowDelay,"UInt",Obj.Flags)
 			Gui,% Win ":Destroy"
 		}
-		this.SetPos()
+		; this.SetPos()
 	}
 	Dismiss(wnd){
 		wnd := (!wnd ? (!this.oldUID ? this.wndHwnd : this.oldUID) : wnd)
