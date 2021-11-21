@@ -31,7 +31,7 @@
 ; limited to only legacy JS, we are stuck with this version.
 
 ; Swal Speed Statistics
-; 129.41 ms Maestrith Msgbox "m()"
+; 62.42 ms Maestrith Msgbox "m()"
 ; 220.55 ms without Animations & Without FontAwesome Pro / Free (52.08% increase from m() function)
 ; 319.26 ms with Window Animations Enabled & FontAwesome Free Disabled
 ; 354.28 ms with Window Animations Enabled & FontAwesome Free Enabled
@@ -316,7 +316,7 @@ class SweetAlert2 {
 		position  := !this.HasVal(oPositions, position) ? "bottom-right" : position
 		iconColor := (colored ? "white" : "")
 		popup     := (colored ? "colored-toast" : "")
-		wndStack  := (stack = 0 ? stack : 1)
+		stack  := (stack = 0 ? stack : 1)
 		title     := (title ? title : msg)
 		msg       := (title = msg ? "" : msg)
 		; Creating Toast defaults and timerClose, communicating with ahkTimer as well
