@@ -72,7 +72,9 @@ Swal.toast("msg",{options}[,wait := "0",sleep := "0"])
 **Swal2 Speed Statistics** 🏃‍♂️
 
 - <span style="color:lightgreen">**62.42 ms**</span> [Maestrith Msgbox](https://github.com/maestrith/HTML-MsgBox) "`m()`"
-- <span style="color:lime">**220.55 ms**</span> Swal2 Msgbox without FontAwesome Pro / Free (52.08% increase from `m()` function)
+- <span style="color:lime">**220.55 ms**</span> with Window Animations Enabled & FontAwesome Free Disabled
+- <span style="color:lime">**319.26 ms**</span> Swal2 Msgbox without FontAwesome Pro / Free (52.08% increase from `m()` function)
+- <span style="color:green">**354.28 ms**</span> with Window Animations Enabled & FontAwesome Free Enabled
 - <span style="color:green">**265.75 ms**</span> with FontAwesome Free (18.59% increase from without)
 - <span style="color:orange">**586.64 ms**</span> with FontAwesome Pro (90.71% increase from without)
 - _the more stylesheets you load (especially from Web not Local) will increase time delay_
