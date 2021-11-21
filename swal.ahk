@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.2.2
+﻿; swal.ahk v0.2.3
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -57,6 +57,7 @@
 ; the same line to each to allow sending a new instance command to the swal2 class
 ; "this.wnd.swal := new SweetAlert2()"
 ;
+; TODO: Enable custom icons with Toast Notifications
 swal := swal()
 swal() {
 	static newSwal2Instance := new SweetAlert2()
@@ -136,7 +137,14 @@ class SweetAlert2 {
 					if (valueA ~= ":") {
 						valueB := StrSplit(valueA,":")
 						; need to grab valueB.2 without quotes
-						oOptions[valueB.1] := valueB.2 
+						if (valueB.1 ~= "title")
+							oOptions[valueB.1] := valueB.2 
+						if (valueB.1 ~= "html")
+							oOptions[valueB.1] := valueB.2  
+						if (valueB.1 ~= "icon")
+							oOptions[valueB.1] := valueB.2   
+						if (valueB.1 ~= "icon")
+							oOptions[valueB.1] := valueB.2 
 					}
 				}
 				; vFront := SubStr(event, 1, StrLen(event)-2)
@@ -270,7 +278,19 @@ class SweetAlert2 {
 		icon      := !this.HasVal(oIconTypes, icon) ? "question" : icon
 		position  := !this.HasVal(oPositions, position) ? "center" : position
 		iconColor := (colored ? "white" : "")
-		neutron   := this.createNeutronWindow(event,1,1,position,[icon,colored],theme,color,titleColor,stack,animate)
+		stack	  := (this.isUndefined(stack) ? 1 : stack)
+		; push final variables into oOptions
+		oOptions["theme"]       := theme
+		oOptions["icon"]        := icon
+		oOptions["colored"]     := colored
+		oOptions["wndPosition"] := position
+		oOptions["iconColor"]   := iconColor
+		oOptions["titleColor"]  := titleColor
+		oOptions["color"]       := color
+		oOptions["wndStack"]    := stack
+		oOptions["animate"]     := animate
+		; neutron   := this.createNeutronWindow(event,1,1,position,[icon,colored],theme,color,titleColor,stack,animate,oOptions)
+		neutron   := this.createNeutronWindow(event,1,1,oOptions)
 		this.setSwalIcons()
 		this.swalPause(wait)
 	    return
@@ -344,13 +364,28 @@ class SweetAlert2 {
 					html: "%msg%",
 			})
 		)
-		this.createNeutronWindow(vAHKTimer "`n" event,2,0,position,[icon,colored],theme,color,titleColor,wndStack,animate)
+		; push final variables into oOptions
+		oOptions["theme"]       := theme
+		oOptions["icon"]        := icon
+		oOptions["colored"]     := colored
+		oOptions["wndPosition"] := position
+		oOptions["iconColor"]   := iconColor
+		oOptions["titleColor"]  := titleColor
+		oOptions["color"]       := color
+		oOptions["wndStack"]    := stack
+		oOptions["animate"]     := animate
+		this.createNeutronWindow(vAHKTimer "`n" event,2,0,oOptions)
 		Sleep, % sleep
 		this.swalPause(wait)
         return this.resultValue
     }
-	createNeutronWindow(event,type,focus := "1",wndPosition := "bottom-right",toastColored := "", theme := "light", color := "", titleColor := "", wndStack := 1, animate := "") {
-		
+	createNeutronWindow(event,type,focus := "1",oOptions*) {
+		; (event,type,focus := "1",wndPosition := "bottom-right",toastColored := "", theme := "light", color := "", titleColor := "", wndStack := 1, animate := "",oOptions := ""
+		; Creating a unqiue variable for each key in the object
+		oOptions := oOptions.1
+		for key,value in oOptions {
+			%key% := oOptions[key]
+		}
 		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
 		neutron.Load("SweetAlert2\index.html")
 		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
@@ -363,18 +398,19 @@ class SweetAlert2 {
 		toastW := this.toastWidth(neutron)
 		toastH := this.toastHeight(neutron)
 
-		; if set theme change from default
+		; if user set theme change from default
 		this.getTheme(neutron,theme)
 		; the hide is for the animateSwalWnd to take effect, the window is hidden and then it animates into effect
 		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition) " Hide") : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA Hide"))
 
-		
-		animate := (!animate ? (type = 1 ? "Center,Blend" : "Right,Slide") : animate)
-		this.animateSwalWnd(neutron, animate) 		
+		animate   := (!animate ? (type = 1 ? "Center,Blend" : "Right,Slide") : animate)
+		showDelay := (this.isUndefined(showDelay) ? 100 : showDelay)
+		this.animateSwalWnd(neutron, animate, showDelay) 		
 
 		; neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition))
-
+		
 		; Colored background for Toasts (for some reason code must be placed in this function to work)
+		toastColored := [icon,colored]
 		if (toastColored.2) {
 			iconColors := {success:"#a5dc86",error:"#f27474",warning:"#f8bb86",info:"#3fc3ee",question:"#87adbd"}
 			if (type = 1) {
@@ -399,10 +435,10 @@ class SweetAlert2 {
 		(focus ? neutron.wnd.eval("$(document).focus()") : "")
 		return neutron
 	}
-	animateSwalWnd(neutron,options) {
+	animateSwalWnd(neutron,options,showDelay) {
 		; Siphoned from Maestrith's Notify Class
 		; Info := {Animate:"Right,Slide",ShowDelay:100}
-		Info := {Animate:options,ShowDelay:50}
+		Info := {Animate:options,ShowDelay:showDelay}
 		if(!IsObject(Win := SweetAlert2.Windows))
 			Win := SweetAlert2.Windows := []
 		Hide := 0
@@ -424,12 +460,13 @@ class SweetAlert2 {
 		for a,b in StrSplit(Info.Animate,",")
 			Flags|=Round(Animation[b])
 		DllCall("AnimateWindow","UInt",Main,"Int",(Info.ShowDelay?Info.ShowDelay:100),"UInt",(Flags?Flags:0x00000008|0x00000004|0x00040000|0x00000002))
-		Flags|=0x00010000,SweetAlert2.Windows[ID].Flags:=Flags
+		Flags|=0x00010000
+		SweetAlert2.Windows[ID].Flags := Flags
 		; NOTE: WinSet Resets has to be here, otherwise I expierenced a bug where GUI Titlebar would show up
 		WinSet, Style, -0xC00000, % this.wnd  ; -Caption
-		; WinSet, Style, -0x40000, % this.wnd   ; -Border
+		WinSet, Style, -0x40000, % this.wnd   ; -Border
 		WinSet, Style, +0xC00000, % this.wnd  ; +Caption
-		; WinSet, Style, +0x40000, % this.wnd   ; +Border
+		WinSet, Style, +0x40000, % this.wnd   ; +Border
 		DetectHiddenWindows,Off 
 	}
 	; static variables for targeting swal2 instances
@@ -854,6 +891,12 @@ class SweetAlert2 {
 	escapeBackSlash(string){
 		return RegExReplace(string, "\\", "\\$1")
 	}
+	isUndefined(param_value) {
+		if (param_value == "") {
+			return true
+		}
+		return false
+	}
 	testing() {
 		msgbox % "you've made it"
 	}
@@ -1102,7 +1145,6 @@ class NeutronWindowforSwal2
 			OnMessage(message, this.bound._OnMessage)
 
 		; Create and save the GUI
-		; TODO: Restore previous default GUI
 		Gui, New, +hWndhWnd +Resize -DPIScale
 		this.hWnd := hWnd
 
