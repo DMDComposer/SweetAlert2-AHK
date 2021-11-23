@@ -129,6 +129,42 @@ class SweetAlert2 {
 					}
 	    		})
 	    	)
+		; if something falls short in parsing through the continuation and updating oOptions
+		; then the continuation will default to itself without alterations
+		try
+		{
+			for key,value in oOptions { ; Creating a unqiue variable for each key in the oOptions
+				%key% := oOptions[key]
+			}
+		} 
+		catch e
+		{
+			if (e) {
+				event := msg
+			}
+		}
+		; if value of position isn't in the allowed params of position, then ignore and place in default position
+		vYingYang  := this.getCurrentTime()        ; if sun is not out then dark mode
+		theme      := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
+		icon       := (this.isUndefined(icon) ? "question" : icon)
+		icon       := !this.HasVal(oIconTypes, icon) ? ("",customIcon := icon) : icon
+		customIcon := (customIcon ? (RegExMatch(customIcon, "i)^<.*>$") ? customIcon : "<img src='" customIcon "'>") : "")
+		customIcon := this.getEscapedJS(customIcon)
+		position   := !this.HasVal(oPositions, position) ? "center" : position
+		iconColor  := (colored ? "white" : "")
+		stack      := (this.isUndefined(stack) ? 1 : stack)
+		; push final variables into oOptions
+		oOptions["theme"]       := theme
+		oOptions["icon"]        := icon
+		oOptions["iconHtml"]    := (!icon ? customIcon : "")
+		oOptions["colored"]     := colored
+		oOptions["wndPosition"] := position
+		oOptions["iconColor"]   := iconColor
+		oOptions["titleColor"]  := titleColor
+		oOptions["color"]       := color
+		oOptions["wndStack"]    := stack
+		oOptions["animate"]     := animate
+		; create the options for the Swal.fire msgbox
 		if (!IsObject(msg)) {
 			if (SubStr(msg, 1, 4) ~= "i)Swal") {
 				event :=  this.cleanMsg(msg)
@@ -183,12 +219,14 @@ class SweetAlert2 {
 				msg    := (msg = "" ? oOptions.html : msg)
 				vTitle := oOptions.title
 				vIcon  := Format("{:L}", oOptions.icon)
+				vIcon  := (!vIcon ? ("",vCustomIcon := oOptions.iconHtml) : vIcon)
 				event = 
 	    			(LTrim Join`n
 	    				Swal.fire({
 	    						title: "%vTitle%",
 								html: "%msg%",
 	    						icon: "%vIcon%",
+	    						iconHtml: "%vCustomIcon%",
 								allowEscapeKey: false,
 								showDenyButton: true,
 								showCancelButton: true,
@@ -258,37 +296,6 @@ class SweetAlert2 {
 	    	event := "Swal.fire(" cJSON.Dumps(msg) ")" (defaultActions ? vDefaultActions : "")  
 			*/
 	    }
-		; if something falls short in parsing through the continuation and updating oOptions
-		; then the continuation will default to itself without alterations
-		try
-		{
-			for key,value in oOptions { ; Creating a unqiue variable for each key in the oOptions
-				%key% := oOptions[key]
-			}
-		} 
-		catch e
-		{
-			if (e) {
-				event := msg
-			}
-		}
-		; if value of position isn't in the allowed params of position, then ignore and place in default position
-		vYingYang := this.getCurrentTime()        ; if sun is not out then dark mode
-		theme     := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
-		icon      := !this.HasVal(oIconTypes, icon) ? "question" : icon
-		position  := !this.HasVal(oPositions, position) ? "center" : position
-		iconColor := (colored ? "white" : "")
-		stack	  := (this.isUndefined(stack) ? 1 : stack)
-		; push final variables into oOptions
-		oOptions["theme"]       := theme
-		oOptions["icon"]        := icon
-		oOptions["colored"]     := colored
-		oOptions["wndPosition"] := position
-		oOptions["iconColor"]   := iconColor
-		oOptions["titleColor"]  := titleColor
-		oOptions["color"]       := color
-		oOptions["wndStack"]    := stack
-		oOptions["animate"]     := animate
 		; neutron   := this.createNeutronWindow(event,1,1,position,[icon,colored],theme,color,titleColor,stack,animate,oOptions)
 		neutron   := this.createNeutronWindow(event,1,1,oOptions)
 		this.setSwalIcons()
@@ -299,7 +306,7 @@ class SweetAlert2 {
 		static oOptions := {icon:"success",timer:"1500",iconColor:"",colored:false,focus:0}
 		oPositions := [ "top", "top-start", "top-end", "top-left", "top-right", "center", "center-start", "center-end", "center-left", "center-right", "bottom", "bottom-start", "bottom-end", "bottom-left", "bottom-right"]
 		oIconTypes := ["success", "warning", "info", "question", "error"]
-
+		
 		; clean msg
 		msg := this.escapeBackSlash(msg)
 
@@ -310,15 +317,32 @@ class SweetAlert2 {
 			%key% := oOptions[key]
 		}
 		; if value of position isn't in the allowed params of position, then ignore and place in default position
-		vYingYang := this.getCurrentTime()        ; if sun is not out then dark mode
-		theme     := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
-		icon      := !this.HasVal(oIconTypes, icon) ? "question" : icon
-		position  := !this.HasVal(oPositions, position) ? "bottom-right" : position
-		iconColor := (colored ? "white" : "")
-		popup     := (colored ? "colored-toast" : "")
-		stack  := (stack = 0 ? stack : 1)
-		title     := (title ? title : msg)
-		msg       := (title = msg ? "" : msg)
+		vYingYang  := this.getCurrentTime()        ; if sun is not out then dark mode
+		theme      := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
+		; icon     := !this.HasVal(oIconTypes, icon) ? "question" : icon
+		icon       := !this.HasVal(oIconTypes, icon) ? ("",customIcon := icon) : (!icon ? "question" : icon)
+		vStyling   := "border-radius: 50%; max-width: 66px; max-height: 66px; transform: translateY(-8%);"
+		customIcon := (RegExMatch(customIcon, "i)^<.*>$") ? customIcon : "<img src='" customIcon "' style='" vStyling "'>")
+		customIcon := this.getEscapedJS(customIcon)
+		position   := !this.HasVal(oPositions, position) ? "bottom-right" : position
+		iconColor  := (colored ? "white" : "")
+		popup      := (colored ? "colored-toast" : "")
+		stack      := (stack = 0 ? stack : 1)
+		title      := (title ? title : msg)
+		msg        := (title = msg ? "" : msg)
+
+		; push final variables into oOptions
+		oOptions["theme"]       := theme
+		oOptions["icon"]        := icon
+		oOptions["iconHtml"]    := (!icon ? customIcon : "")
+		oOptions["colored"]     := colored
+		oOptions["wndPosition"] := position
+		oOptions["iconColor"]   := iconColor
+		oOptions["titleColor"]  := titleColor
+		oOptions["color"]       := color
+		oOptions["wndStack"]    := stack
+		oOptions["animate"]     := animate
+
 		; Creating Toast defaults and timerClose, communicating with ahkTimer as well
 		vAHKTimer =
 		(
@@ -336,6 +360,7 @@ class SweetAlert2 {
 					toast: true,
 					position: "%position%",
 					iconColor: "%iconColor%",
+					iconHtml: "%customIcon%",
 					showConfirmButton: false,
 					timer: %timer%,
 					timerProgressBar: true,
@@ -364,17 +389,8 @@ class SweetAlert2 {
 					html: "%msg%",
 			})
 		)
-		; push final variables into oOptions
-		oOptions["theme"]       := theme
-		oOptions["icon"]        := icon
-		oOptions["colored"]     := colored
-		oOptions["wndPosition"] := position
-		oOptions["iconColor"]   := iconColor
-		oOptions["titleColor"]  := titleColor
-		oOptions["color"]       := color
-		oOptions["wndStack"]    := stack
-		oOptions["animate"]     := animate
 		this.createNeutronWindow(vAHKTimer "`n" event,2,0,oOptions)
+		this.setSwalIcons()
 		Sleep, % sleep
 		this.swalPause(wait)
         return this.resultValue
@@ -398,6 +414,12 @@ class SweetAlert2 {
 		toastW := this.toastWidth(neutron)
 		toastH := this.toastHeight(neutron)
 
+		; custom icson for notifications
+		if (iconHtml) {
+			; Notify().AddWindow(iconHtml, {Title:"Title"})
+			neutron.wnd.Eval("$('.swal2-icon').css({'border':'none'})")
+		}
+		
 		; if user set theme change from default
 		this.getTheme(neutron,theme)
 		; the hide is for the animateSwalWnd to take effect, the window is hidden and then it animates into effect
@@ -406,9 +428,8 @@ class SweetAlert2 {
 		animate   := (!animate ? (type = 1 ? "Center,Blend" : "Right,Slide") : animate)
 		showDelay := (this.isUndefined(showDelay) ? 100 : showDelay)
 		this.animateSwalWnd(neutron, animate, showDelay) 		
-
 		; neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition))
-		
+
 		; Colored background for Toasts (for some reason code must be placed in this function to work)
 		toastColored := [icon,colored]
 		if (toastColored.2) {
