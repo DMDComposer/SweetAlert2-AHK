@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.2.3
+﻿; swal.ahk v0.2.4
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -319,10 +319,11 @@ class SweetAlert2 {
 		; if value of position isn't in the allowed params of position, then ignore and place in default position
 		vYingYang  := this.getCurrentTime()        ; if sun is not out then dark mode
 		theme      := (!theme ? vYingYang : theme) ; if user hasn't set theme then fallback to ligh/dark mode
-		; icon     := !this.HasVal(oIconTypes, icon) ? "question" : icon
-		icon       := !this.HasVal(oIconTypes, icon) ? ("",customIcon := icon) : (!icon ? "question" : icon)
+		icon       := (this.isUndefined(icon) ? "question" : icon)
+		icon       := !this.HasVal(oIconTypes, icon) ? ("",customIcon := icon) : icon
 		vStyling   := "border-radius: 50%; max-width: 66px; max-height: 66px; transform: translateY(-8%);"
-		customIcon := (RegExMatch(customIcon, "i)^<.*>$") ? customIcon : "<img src='" customIcon "' style='" vStyling "'>")
+		; customIcon := (RegExMatch(customIcon, "i)^<.*>$") ? customIcon : "<img src='" customIcon "' style='" vStyling "'>")
+		customIcon := (customIcon ? (RegExMatch(customIcon, "i)^<.*>$") ? customIcon : "<img src='" customIcon "' style='" vStyling "'>") : "")
 		customIcon := this.getEscapedJS(customIcon)
 		position   := !this.HasVal(oPositions, position) ? "bottom-right" : position
 		iconColor  := (colored ? "white" : "")
@@ -415,10 +416,7 @@ class SweetAlert2 {
 		toastH := this.toastHeight(neutron)
 
 		; custom icson for notifications
-		if (iconHtml) {
-			; Notify().AddWindow(iconHtml, {Title:"Title"})
-			neutron.wnd.Eval("$('.swal2-icon').css({'border':'none'})")
-		}
+		iconHtml ? neutron.wnd.Eval("$('.swal2-icon').css({'border':'none'})") : ""
 		
 		; if user set theme change from default
 		this.getTheme(neutron,theme)
