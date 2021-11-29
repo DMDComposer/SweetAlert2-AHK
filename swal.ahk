@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.2.4
+﻿; swal.ahk v0.3.5
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -57,7 +57,8 @@
 ; the same line to each to allow sending a new instance command to the swal2 class
 ; "this.wnd.swal := new SweetAlert2()"
 ;
-; TODO: Enable custom icons with Toast Notifications
+; TODO: Maybe split SweetAlert2 Class with extends for cleaner code
+; TODO: Make sure gui sizes are consistnt with DPI scaling
 swal := swal()
 swal() {
 	static newSwal2Instance := new SweetAlert2()
@@ -65,7 +66,7 @@ swal() {
 }
 ; swal := new SweetAlert2()
 class SweetAlert2 {
-    __New(options) {
+    __New(Margin := 10) {
 		this.ShowDelay := 40
 		this.ID        := 0
 		this.Margin    := Margin
@@ -403,11 +404,15 @@ class SweetAlert2 {
 		for key,value in oOptions {
 			%key% := oOptions[key]
 		}
+
+
 		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
 		neutron.Load("SweetAlert2\index.html")
 		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
 		neutron.Gui("+LabelSwal2MsgBox")       ; Use the Gui method to set a custom label prefix for GUI events. This code is equivalent to the line `Gui, name:+LabelNeutron` for a normal GUI.
 		this.getSwalUID(neutron.UID())         ; Create UID
+		
+		this.getWndID(oOptions)
 
 		; I used inspector window on Swal popups to figure out what classes/id's to target to figure out width/height params
 		fireW  := this.fireWidth(neutron)
@@ -421,7 +426,12 @@ class SweetAlert2 {
 		; if user set theme change from default
 		this.getTheme(neutron,theme)
 		; the hide is for the animateSwalWnd to take effect, the window is hidden and then it animates into effect
-		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition) " Hide") : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA Hide"))
+		(type = 1 ? neutron.Show(this.getSwalWndPos(fireW,fireH,wndPosition) " Hide") : neutron.Show(this.getSwalWndPos(toastW,toastH,wndPosition,wndStack) " NA Hide")) 
+
+		; set toastWnd Pos
+		if (type = 2) {
+			Obj := this.setWndPos()
+		}
 
 		animate   := (!animate ? (type = 1 ? "Center,Blend" : "Right,Slide") : animate)
 		showDelay := (this.isUndefined(showDelay) ? 100 : showDelay)
@@ -456,18 +466,14 @@ class SweetAlert2 {
 	}
 	animateSwalWnd(neutron,options,showDelay) {
 		; Siphoned from Maestrith's Notify Class
-		; Info := {Animate:"Right,Slide",ShowDelay:100}
 		Info := {Animate:options,ShowDelay:showDelay}
-		if(!IsObject(Win := SweetAlert2.Windows))
-			Win := SweetAlert2.Windows := []
 		Hide := 0
-		for a,b in StrSplit(Info.Hide,",")
-			if(Val := this.Animation[b])
+		for key,value in StrSplit(Info.Hide,",")
+			if(Val := this.Animation[value])
 				Hide|=Val
 		Info.Hide := Hide
 		DetectHiddenWindows,On
-		Owner := WinActive("A")
-		Main := neutron.UID()
+		Owner     := WinActive("A")
 		Animation := {Bottom:0x00000008
 					, Top:0x00000004
 					, Left:0x00000001
@@ -475,12 +481,16 @@ class SweetAlert2 {
 					, Center:0x00000010
 					, Slide:0x00040000
 					, Blend:0x00080000}
+
 		Flags := 0
-		for a,b in StrSplit(Info.Animate,",")
-			Flags|=Round(Animation[b])
-		DllCall("AnimateWindow","UInt",Main,"Int",(Info.ShowDelay?Info.ShowDelay:100),"UInt",(Flags?Flags:0x00000008|0x00000004|0x00040000|0x00000002))
+		for key,value in StrSplit(Info.Animate,",")
+			Flags|=Round(Animation[value])
+		DllCall("AnimateWindow","UInt",this.newUID,"Int",(Info.ShowDelay?Info.ShowDelay:100),"UInt",(Flags?Flags:0x00000008|0x00000004|0x00040000|0x00000002))
+		for a,b in StrSplit((Info.Destroy ? Info.Destroy : "Top,Left,Slide"), ",")
+			Flags|=Round(this.Animation[b])
 		Flags|=0x00010000
-		SweetAlert2.Windows[ID].Flags := Flags
+		this.Windows[this.ID].Flags := Flags
+
 		; NOTE: WinSet Resets has to be here, otherwise I expierenced a bug where GUI Titlebar would show up
 		WinSet, Style, -0xC00000, % this.wnd  ; -Caption
 		WinSet, Style, -0x40000, % this.wnd   ; -Border
@@ -488,11 +498,65 @@ class SweetAlert2 {
 		WinSet, Style, +0x40000, % this.wnd   ; +Border
 		DetectHiddenWindows,Off 
 	}
+	getWndID(options) {
+		; passing params in wnd.object
+		this.Current     := ID := ++this.ID
+		this.Windows[ID] := {ID:this.wnd
+							,HWND:this.wndHwnd
+							,Win:"Win" ID}
+		for key, value in options
+			this.Windows[ID,key] := value
+		return ID
+	}
+	setWndPos() {
+		this.Margin    := Margin := 5
+		SysGet,Mon,MonitorWorkArea
+		this.MonBottom := MonBottom
+		this.MonTop    := MonTop
+		this.MonLeft   := MonLeft
+		this.MonRight  := MonRight
+		Width  := this.MonRight - this.MonLeft
+		MH     := this.MonBottom - this.MonTop
+		MinX   := []
+		MinY   := []
+		Obj    := []
+		Height := 0
+		Sub    := 0
+		MY     := MH
+		MaxW   := {0:1}
+		Delay  := A_WinDelay
+		Hidden := A_DetectHiddenWindows
+		DetectHiddenWindows,On
+		SetWinDelay,-1
+		for key, value in this.Windows {
+			WinGetPos,x,y,w,h,% value.ID
+			Height += h + this.Margin
+			; m(h,Height)
+			if (MH <= Height) {
+				Sub    := Width - MinX.MinIndex() + this.Margin
+				MY     := MH
+				MinY   := []
+				MinX   := []
+				Height := h
+				MaxW   := {0:1}
+				Reset  := 1
+			}
+			MaxW[w]           := 1
+			MinX[Width-w-Sub] := 1
+			MinY[MY := MY - h - this.Margin] := y
+			wndPos := MinX.MinIndex() + (Reset ? 0 : MaxW.MaxIndex() - w)
+			WinMove,% value.ID,,% wndPos,MinY.MinIndex()
+			Obj[key] := {x:x, y:y, w:w, h:h}
+			Reset    := 0
+		}
+		DetectHiddenWindows,%Hidden%
+		SetWinDelay,%Delay%
+	}
 	; static variables for targeting swal2 instances
-	static newUID  := ""
-	static oldUID  := ""
-	static wnd     := "" ; shorthand to grab current window
-	static wndHwnd := "" ; this will always = neutron.UID()
+	static newUID  := "" ; new Hwnd
+	static oldUID  := "" ; old Hwnd
+	static wnd     := "" ; shorthand to grab current window "ahk_id " this.newUID
+	static wndHwnd := "" ; this will always = neutron.UID() aka "Hwnd"
 	Delete(Win){
 		Win := RegExReplace(Win,"\D")
 		if(WinExist("ahk_id" Win)){
@@ -689,14 +753,14 @@ class SweetAlert2 {
 		; MH := MonBottom - MonTop
 		; m(A_ScreenHeight,MH)
 		WinGetPos,,,,vTaskbarHeight, ahk_class Shell_TrayWnd ; Get Height of Windows Taskbar
-		WinGetPos, , , vAltWidth, vAltHeight, % this.wnd
+		WinGetPos,,, vAltWidth, vAltHeight, % this.wnd
 		; if width from this.toastWidth() is less than 136, than grab the width from WinGetPos "vWidth"
 		if (w <= 136) {
 			w := vAltWidth
 		}
 		;set all the variables for positions/heights of the Toast Msg
-		vW := w
-		vH := h
+		vW := w ; // (A_ScreenDPI / 96)
+		vH := h + ((A_ScreenDPI / 96) > 1 ? + 29 : 0)
 		vX := ((pos = "bottom-right" || pos = "top-right" || pos = "center-right") ? A_ScreenWidth - vW : 0)
 		vY := ((pos = "bottom-left" || pos = "bottom-right") ? A_ScreenHeight - (vH + vTaskbarHeight) + minusCaptionH : 0)
 		if (pos = "center-left" || pos = "center-right") {
@@ -716,6 +780,7 @@ class SweetAlert2 {
 		}
 		vPos := "w" vW " h" vH " x" vX " y" vY
 		return vPos
+		; return "w256 h130 x2304 y1286.83"
 	}
 	setWndFlash(neutron,wnd) {
 		; WIP to create window flash effect on nuetron gui
