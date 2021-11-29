@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.3.5
+﻿; swal.ahk v0.3.6
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -469,7 +469,7 @@ class SweetAlert2 {
 		Info := {Animate:options,ShowDelay:showDelay}
 		Hide := 0
 		for key,value in StrSplit(Info.Hide,",")
-			if(Val := this.Animation[value])
+			if (Val := this.Animation[value])
 				Hide|=Val
 		Info.Hide := Hide
 		DetectHiddenWindows,On
@@ -509,6 +509,7 @@ class SweetAlert2 {
 		return ID
 	}
 	setWndPos() {
+		local ; local needs to be here otherwise other scripts will be affected
 		this.Margin    := Margin := 5
 		SysGet,Mon,MonitorWorkArea
 		this.MonBottom := MonBottom
@@ -528,10 +529,10 @@ class SweetAlert2 {
 		Hidden := A_DetectHiddenWindows
 		DetectHiddenWindows,On
 		SetWinDelay,-1
+		; m(this.Windows)
 		for key, value in this.Windows {
 			WinGetPos,x,y,w,h,% value.ID
 			Height += h + this.Margin
-			; m(h,Height)
 			if (MH <= Height) {
 				Sub    := Width - MinX.MinIndex() + this.Margin
 				MY     := MH
@@ -551,6 +552,7 @@ class SweetAlert2 {
 		}
 		DetectHiddenWindows,%Hidden%
 		SetWinDelay,%Delay%
+		; m(Width,MH,MinX,MinY,Obj,Height,Sub,MY,MaxW,Delay,Hidden)
 	}
 	; static variables for targeting swal2 instances
 	static newUID  := "" ; new Hwnd
