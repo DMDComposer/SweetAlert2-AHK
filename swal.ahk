@@ -1,4 +1,4 @@
-﻿; swal.ahk v0.3.6
+﻿; swal.ahk v0.3.7
 ; Copyright (c) 2021 Dillon DeRosa (known also as DMDComposer), Neutron & CJSON forked from G33kdude
 ; https://github.com/DMDComposer/SweetAlert2-AHK
 ;
@@ -405,7 +405,6 @@ class SweetAlert2 {
 			%key% := oOptions[key]
 		}
 
-
 		neutron := new NeutronWindowforSwal2() ; Create a new NeutronWindow and navigate to our HTML page
 		neutron.Load("SweetAlert2\index.html")
 		neutron.wnd.onReady(event)             ; Sending the Swal Msg Params for the Popup Msg
@@ -556,9 +555,17 @@ class SweetAlert2 {
 	}
 	; static variables for targeting swal2 instances
 	static newUID  := "" ; new Hwnd
-	static oldUID  := "" ; old Hwnd
-	static wnd     := "" ; shorthand to grab current window "ahk_id " this.newUID
-	static wndHwnd := "" ; this will always = neutron.UID() aka "Hwnd"
+		 , oldUID  := "" ; old Hwnd
+		 , wnd     := "" ; shorthand to grab current window "ahk_id " this.newUID
+		 , wndHwnd := "" ; this will always = neutron.UID() aka "Hwnd"
+	getSwalUID(UID := "") {
+		; Wanted to figure out a way to give each swal msg a unique ID
+		this.oldUID   := (this.newUID ? this.newUID : "")
+		,this.newUID  := (UID ? UID : this.newUID)
+		,this.wnd     := "ahk_id " this.newUID
+		,this.wndHwnd := UID
+		return UID
+	} 
 	Delete(Win){
 		Win := RegExReplace(Win,"\D")
 		if(WinExist("ahk_id" Win)){
@@ -571,14 +578,6 @@ class SweetAlert2 {
 		wnd := (!wnd ? (!this.oldUID ? this.wndHwnd : this.oldUID) : wnd)
 		this.Delete("ahk_id " wnd)
 	}
-	getSwalUID(UID := "") {
-		; Wanted to figure out a way to give each swal msg a unique ID
-		this.oldUID := (this.newUID ? this.newUID : "")
-		this.newUID := (UID ? UID : this.newUID)
-		this.wnd    := "ahk_id " this.newUID
-		this.wndHwnd := UID
-		return UID
-	}
 	getTheme(neutron,theme) {
 		oThemes := ["default"
 				   ,"bootstrap-4"
@@ -588,98 +587,100 @@ class SweetAlert2 {
 				   ,"dark"
 				   ,"minimal"
 				   ,"wordpress-admin"]
-		if (theme = "default" || theme = "") {
-			neutron.wnd.eval("$(document.body).css({ background: ""rgba(0,0,0,0.0)"" })")
-			return
-		}
-		if (theme = "bootstrap-4") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/bootstrap-4/bootstrap-4.min.css'
-  				})
-			)
-		}
-		if (theme = "borderless") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/borderless/borderless.min.css'
-  				})
-				$(document.body).css({ background: "#38485F" })
-				$(".swal2-timer-progress-bar").css({ background: "rgba(255, 255, 255, 0.9)" })
-			)
-		}
-		if (theme = "bulma") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/bulma/bulma.min.css'
-  				})
-			)
-		}
-		if (theme = "material-ui") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/material-ui/material-ui.min.css'
-  				})
-			)
-		}
-		if (theme = "dark") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/dark/dark.min.css'
-  				})
-				$(document.body).css({background: "#19191A"})
-				$(".swal2-success-fix,.swal2-success-circular-line-left,.swal2-success-circular-line-right").css({ background: "#19191A" })
-			)
-		}
-		if (theme = "minimal") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/minimal/minimal.min.css'
-  				})
-			)
-		}
-		if (theme = "wordpress-admin") {
-			js =
-			(
-				$('<link>')
-  				.appendTo('head')
-  				.attr({
-  				    type: 'text/css', 
-  				    rel: 'stylesheet',
-  				    href: './includes/sweetalert2/themes/wordpress-admin/wordpress-admin.min.css'
-  				})
-				$(document.body).css({ background: "#32373C" })
-			)
+		Switch theme
+		{
+			Case "default", "": {
+				neutron.wnd.eval("$(document.body).css({ background: ""rgba(0,0,0,0.0)"" })")
+			}
+			Case "bootstrap-4": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/bootstrap-4/bootstrap-4.min.css'
+  					})
+				)
+			}
+			Case "borderless": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/borderless/borderless.min.css'
+  					})
+					$(document.body).css({ background: "#38485F" })
+					$(".swal2-timer-progress-bar").css({ background: "rgba(255, 255, 255, 0.9)" })
+				)
+			}
+			Case "bulma": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/bulma/bulma.min.css'
+  					})
+				)
+			}
+			Case "material-ui": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/material-ui/material-ui.min.css'
+  					})
+				)
+			}
+			Case "dark": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/dark/dark.min.css'
+  					})
+					$(document.body).css({background: "#19191A"})
+					$(".swal2-success-fix,.swal2-success-circular-line-left,.swal2-success-circular-line-right").css({ background: "#19191A" })
+				)
+			}
+			Case "minimal": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/minimal/minimal.min.css'
+  					})
+				)
+			}
+			Case "wordpress-admin": {
+				js =
+				(
+					$('<link>')
+  					.appendTo('head')
+  					.attr({
+  					    type: 'text/css', 
+  					    rel: 'stylesheet',
+  					    href: './includes/sweetalert2/themes/wordpress-admin/wordpress-admin.min.css'
+  					})
+					$(document.body).css({ background: "#32373C" })
+				)
+			}
 		}
 		neutron.wnd.eval(js)
 	}
@@ -688,9 +689,9 @@ class SweetAlert2 {
 		; m(neutron.wnd.eval("$("".swal2-contentwrapper"").height()"))
 		; get Width of Popup before showing
 		fwTitle  := neutron.wnd.eval("$("".swal2-title"").width()")
-		fwHeader := neutron.wnd.eval("$("".swal2-header"").width()")
-		fwPopup  := neutron.wnd.eval("$("".swal2-popup"").width()")
-		fwModal  := neutron.wnd.eval("$("".swal2-modal"").width()")
+		,fwHeader := neutron.wnd.eval("$("".swal2-header"").width()")
+		,fwPopup  := neutron.wnd.eval("$("".swal2-popup"").width()")
+		,fwModal  := neutron.wnd.eval("$("".swal2-modal"").width()")
 		; m(neutron.wnd.eval("$("".swal2-modal"").width()"))
 		; 6 is the width from -Caption
 		return fwPopup + 6
@@ -698,12 +699,21 @@ class SweetAlert2 {
 	fireHeight(neutron) {
 		; get Height of Popup before showing
 		; m(this.getSwalCSSProperties(neutron,".swal2-popup")["height"])
-		fhContainer := neutron.wnd.eval("$("".swal2-container"").height()")
-		fhTitle     := neutron.wnd.eval("$("".swal2-title"").height()")
-		fhHeader    := neutron.wnd.eval("$("".swal2-header"").height()")
-		fhPopup     := neutron.wnd.eval("$("".swal2-popup"").height()")
-		fhActions   := neutron.wnd.eval("$("".swal2-actions"").height()")
-		fhTimer     := neutron.wnd.eval("$("".swal2-timer-progress-bar-container"").height()")
+		; fhContainer := neutron.wnd.eval("$("".swal2-container"").height()")
+		/*
+		fhContainer := this.getSwalCSSProperties(neutron,".swal2-container").height
+		fhTitle     := this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup > .swal2-header > #swal2-title").height
+		fhHeader    := this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup > .swal2-header").height
+		fhPopup     := this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup").height
+		fhActions   := this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup > .swal2-actions").height
+		fhTimer     := this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup > .swal2-timer-progress-bar-container").height 
+		*/
+		; m(this.getSwalCSSProperties(neutron,".swal2-container > .swal2-popup > .swal2-contentwrapper > .swal2-title"))
+		fhTitle    := neutron.wnd.eval("$("".swal2-title"").height()")
+		,fhHeader  := neutron.wnd.eval("$("".swal2-header"").height()")
+		,fhPopup   := neutron.wnd.eval("$("".swal2-popup"").height()")
+		,fhActions := neutron.wnd.eval("$("".swal2-actions"").height()")
+		,fhTimer   := neutron.wnd.eval("$("".swal2-timer-progress-bar-container"").height()")
 		if (!fhTitle) {
 			neutron.wnd.eval("$("".swal2-header"").height(" fhHeader - 42 ")")
 		}
@@ -895,8 +905,8 @@ class SweetAlert2 {
 	getErrors(neutron,event) {
 		m(event)
 	}
-	getSwalCSSProperties(neutron,event) {
-		vStr := neutron.wnd.getStyleById("" event "")
+	getSwalCSSProperties(neutron,elementID) {
+		vStr := neutron.wnd.getStyleById("" elementID "")
 		oCSSProps := {}
 		for key,value in StrSplit(vStr,";","`n`r") {
 			prop := StrSplit(value, ":","`n`r")
@@ -987,6 +997,23 @@ class SweetAlert2 {
 		msgbox % "you've made it"
 	}
 }
+/* 
+class Swal2Variables extends SweetAlert2 {
+	; static variables for targeting swal2 instances
+	static newUID  := "" ; new Hwnd
+	static oldUID  := "" ; old Hwnd
+	static wnd     := "" ; shorthand to grab current window "ahk_id " this.newUID
+	static wndHwnd := "" ; this will always = neutron.UID() aka "Hwnd"
+	getSwalUID(UID := "") {
+		; Wanted to figure out a way to give each swal msg a unique ID
+		this.oldUID := (this.newUID ? this.newUID : "")
+		this.newUID := (UID ? UID : this.newUID)
+		this.wnd    := "ahk_id " this.newUID
+		this.wndHwnd := UID
+		return UID
+	} 
+} 
+*/
 ;
 ; --- Trigger AHK by page events ---
 showSwalMsg(neutron, event) {
@@ -1026,27 +1053,6 @@ showSwalMsg(neutron, event) {
 ; Copyright (c) 2020 Philip Taylor (known also as GeekDude, G33kDude)
 ; https://github.com/G33kDude/Neutron.ahk
 ;
-; MIT License
-;
-; Permission is hereby granted, free of charge, to any person obtaining a copy
-; of this software and associated documentation files (the "Software"), to deal
-; in the Software without restriction, including without limitation the rights
-; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-; copies of the Software, and to permit persons to whom the Software is
-; furnished to do so, subject to the following conditions:
-;
-; The above copyright notice and this permission notice shall be included in all
-; copies or substantial portions of the Software.
-;
-; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-; SOFTWARE.
-;
-
 class NeutronWindowforSwal2
 {
 	static TEMPLATE := "
